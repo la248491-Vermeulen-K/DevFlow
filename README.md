@@ -1,6 +1,6 @@
-# DevForge
+# DevFlow
 
-DevForge is a full-stack project management platform designed for developers and development teams.
+DevFlow is a full-stack project management platform designed for developers and development teams.
 
 ## 🚀 Features
 
