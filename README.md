@@ -45,7 +45,7 @@ DevFlow is a full-stack project management platform designed for developers and 
 
 ## 📋 Roadmap
 
-- [ ] Project setup
+- [X] Project setup
 - [ ] Authentication
 - [ ] User management
 - [ ] Project management
