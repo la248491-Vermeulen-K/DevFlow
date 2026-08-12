@@ -1,27 +1,31 @@
 package com.vermeulenkylian.backend.service;
 
-import com.vermeulenkylian.backend.DTO.LoginRequestDto;
-import com.vermeulenkylian.backend.DTO.LoginResponseDto;
-import com.vermeulenkylian.backend.DTO.RegisterRequestDto;
-import com.vermeulenkylian.backend.DTO.UserResponseDto;
+import com.vermeulenkylian.backend.DTO.*;
+import com.vermeulenkylian.backend.model.RefreshToken;
 import com.vermeulenkylian.backend.model.User;
+import com.vermeulenkylian.backend.repository.RefreshTokenRepository;
 import com.vermeulenkylian.backend.repository.UserRepository;
 import com.vermeulenkylian.backend.security.JwtService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    @Value("${app.jwt.refresh-expiration-days}") int refreshExpirationDays;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, RefreshTokenRepository refreshTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public UserResponseDto register(RegisterRequestDto dto) {
@@ -43,6 +47,24 @@ public class AuthService {
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Email ou mot de passe incorrect");
         }
-        return new LoginResponseDto(jwtService.generateToken(user), user.getId(), user.getName(), user.getEmail());
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken.setUser(user);
+        refreshToken.setExpiryDate(LocalDateTime.now().plusDays(refreshExpirationDays));
+        refreshTokenRepository.save(refreshToken);
+        return new LoginResponseDto(jwtService.generateToken(user), user.getId(), user.getName(), user.getEmail(), refreshToken.getToken());
+    }
+
+    public String refreshToken(RefreshRequestDto dto){
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(dto.getRefreshToken())
+                .orElseThrow(() ->
+                        new RuntimeException("Refresh token introuvable")
+                );
+        if(refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Refresh token expiré");
+        }
+        User user = refreshToken.getUser();
+        String newToken = jwtService.generateToken(user);
+        return newToken;
     }
 }

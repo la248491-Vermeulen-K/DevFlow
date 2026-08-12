@@ -5,15 +5,25 @@ public class LoginResponseDto {
     private Long id;
     private String name;
     private String email;
+    private String refreshToken;
 
     public LoginResponseDto() {
     }
 
-    public LoginResponseDto(String token, Long id, String name, String email) {
+    public LoginResponseDto(String token, Long id, String name, String email, String refreshToken) {
         this.token = token;
         this.id = id;
         this.name = name;
         this.email = email;
+        this.refreshToken = refreshToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getToken() {

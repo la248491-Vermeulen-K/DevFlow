@@ -1,9 +1,6 @@
 package com.vermeulenkylian.backend.controller;
 
-import com.vermeulenkylian.backend.DTO.LoginRequestDto;
-import com.vermeulenkylian.backend.DTO.LoginResponseDto;
-import com.vermeulenkylian.backend.DTO.RegisterRequestDto;
-import com.vermeulenkylian.backend.DTO.UserResponseDto;
+import com.vermeulenkylian.backend.DTO.*;
 import com.vermeulenkylian.backend.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,5 +21,9 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDto loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         return authService.login(loginRequestDto);
+    }
+    @PostMapping("/refresh")
+    public String refreshToken(@RequestBody RefreshRequestDto refreshToken) {
+        return authService.refreshToken(refreshToken);
     }
 }
