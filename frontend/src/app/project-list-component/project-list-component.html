@@ -1,6 +1,11 @@
+<h1>PROJECT LIST</h1>
+
+<p>Nombre : {{ projects.length }}</p>
+
 @for (project of projects; track project.id) {
-    <p>{{ project.name }}</p>
+  <div>
+    <h2>{{ project.name }}</h2>
     <p>{{ project.description }}</p>
     <p>{{ project.createdAt }}</p>
-    <br>
+  </div>
 }
