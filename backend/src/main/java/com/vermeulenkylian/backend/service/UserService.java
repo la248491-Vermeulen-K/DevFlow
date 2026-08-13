@@ -23,9 +23,10 @@ public class UserService {
                     user.getCreatedAt()
             );
     }
-    public void updateProfile(User user, UpdateProfileRequestDto dto) {
+    public UserProfileDto updateProfile(User user, UpdateProfileRequestDto dto) {
         user.setName(dto.getName());
         user.setBio(dto.getBio());
         userRepository.save(user);
+        return getProfile(user);
     }
 }

@@ -21,7 +21,7 @@ public class UserController {
         return userService.getProfile(user);
     }
     @PutMapping("/me")
-    public void updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequestDto dto) {
-        userService.updateProfile(user, dto);
+    public UserProfileDto updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequestDto dto) {
+        return userService.updateProfile(user, dto);
     }
 }
