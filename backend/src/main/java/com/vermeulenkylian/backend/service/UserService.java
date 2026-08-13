@@ -1,5 +1,6 @@
 package com.vermeulenkylian.backend.service;
 
+import com.vermeulenkylian.backend.DTO.UpdateProfileRequestDto;
 import com.vermeulenkylian.backend.DTO.UserProfileDto;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.repository.UserRepository;
@@ -12,8 +13,8 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-        public UserProfileDto getProfile(User user) {
-            return new UserProfileDto(
+    public UserProfileDto getProfile(User user) {
+        return new UserProfileDto(
                     user.getId(),
                     user.getName(),
                     user.getEmail(),
@@ -21,5 +22,10 @@ public class UserService {
                     user.getAvatarUrl(),
                     user.getCreatedAt()
             );
+    }
+    public void updateProfile(User user, UpdateProfileRequestDto dto) {
+        user.setName(dto.getName());
+        user.setBio(dto.getBio());
+        userRepository.save(user);
     }
 }
