@@ -3,12 +3,12 @@ import { Subscription } from 'rxjs';
 import { ProjectService } from '../project-service';
 
 @Component({
-  selector: 'app-project-list-component',
+  selector: 'app-project-list',
   imports: [],
-  templateUrl: './project-list-component.html',
-  styleUrl: './project-list-component.scss',
+  templateUrl: './project-list.html',
+  styleUrl: './project-list.scss',
 })
-export class ProjectListComponent implements OnInit, OnDestroy {
+export class ProjectList implements OnInit, OnDestroy {
 
   projects: any[] = [];
 
