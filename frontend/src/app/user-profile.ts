@@ -6,11 +6,11 @@ import { UserProfile } from './models/userProfile-response';
   providedIn: 'root',
 })
 export class UserProfileService {
-  backendUrl = 'http://localhost:8080/api/';
+  backendUrl = 'http://localhost:8080/api/users';
 
   constructor(private http: HttpClient) {}
 
-  getProfil(){
-    return this.http.get<UserProfile>(`${this.backendUrl}users/me`)
+  getProfile(){
+    return this.http.get<UserProfile>(`${this.backendUrl}/me`)
   }
 }

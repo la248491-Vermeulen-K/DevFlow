@@ -11,12 +11,14 @@ import { UserProfile } from '../models/userProfile-response';
 })
 export class ProfileComponent implements OnInit {
 
+  backendUrl = "http://localhost:8080"
+
   profile = signal<UserProfile | null>(null);
 
   private userProfileService = inject(UserProfileService);
 
   ngOnInit(): void {
-    this.userProfileService.getProfil().subscribe({
+    this.userProfileService.getProfile().subscribe({
       next: (data) => {
         this.profile.set(data);
       },
