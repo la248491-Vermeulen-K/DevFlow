@@ -1,11 +1,14 @@
 <h1>PROJECT LIST</h1>
 
-<p>Nombre : {{ projects.length }}</p>
+<!-- ⚠️ Notez les parenthèses () pour appeler le signal -->
+<p>Nombre : {{ projects().length }}</p>
 
-@for (project of projects; track project.id) {
+@for (project of projects(); track project.id) {
   <div>
     <h2>{{ project.name }}</h2>
     <p>{{ project.description }}</p>
     <p>{{ project.createdAt }}</p>
   </div>
+} @empty {
+  <p>Aucun projet trouvé.</p>
 }
