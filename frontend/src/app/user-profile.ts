@@ -13,4 +13,11 @@ export class UserProfileService {
   getProfile(){
     return this.http.get<UserProfile>(`${this.backendUrl}/me`)
   }
-}
+
+  uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<UserProfile>(`${this.backendUrl}/me/avatar`, formData);
+  }
+} 

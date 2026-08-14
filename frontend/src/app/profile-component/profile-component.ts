@@ -13,6 +13,8 @@ export class ProfileComponent implements OnInit {
 
   backendUrl = "http://localhost:8080"
 
+  errorMessage = ""
+
   profile = signal<UserProfile | null>(null);
 
   private userProfileService = inject(UserProfileService);
@@ -27,4 +29,24 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
+
+  onAvatarSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  this.errorMessage = ""
+
+  if (!input.files || input.files.length === 0) {
+    return;
+  }
+
+  const file = input.files[0];
+  this.userProfileService.uploadAvatar(file).subscribe({
+  next: (updatedProfile) => {
+    this.profile.set(updatedProfile);
+  },
+  error: (error) => {
+    this.errorMessage = 'Erreur lors de l\'upload de l\'avatar'
+    console.error('Erreur lors de l\'upload de l\'avatar', error);
+  }
+});
+}
 }

@@ -2,10 +2,9 @@
   <div class="profile">
 
     <div class="profile-header">
-      <!-- Image par défaut si avatarUrl est null -->
       <img
         class="profile-avatar"
-        [src]="p.avatarUrl || 'https://via.placeholder.com/150'"
+        [src]="p.avatarUrl ? backendUrl + p.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
         [alt]="'Photo de profil de ' + p.name"
       >
 
@@ -14,6 +13,23 @@
         <p>{{ p.email }}</p>
       </div>
     </div>
+
+    <div class="profile-section avatar-section">
+      <h2>Photo de profil</h2>
+
+      <label for="avatar">Changer ma photo de profil</label>
+
+      <input
+        id="avatar"
+        type="file"
+        accept="image/*"
+        (change)="onAvatarSelected($event)"
+      >
+    </div>
+
+    @if (errorMessage != "") {
+        <p>{{ errorMessage }}</p>
+    }
 
     <div class="profile-body">
 
