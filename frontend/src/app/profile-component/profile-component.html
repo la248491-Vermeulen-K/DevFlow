@@ -1,0 +1,49 @@
+@if (profile(); as p) {
+  <div class="profile">
+
+    <div class="profile-header">
+      <!-- Image par défaut si avatarUrl est null -->
+      <img
+        class="profile-avatar"
+        [src]="p.avatarUrl || 'https://via.placeholder.com/150'"
+        [alt]="'Photo de profil de ' + p.name"
+      >
+
+      <div class="profile-info">
+        <h1>{{ p.name }}</h1>
+        <p>{{ p.email }}</p>
+      </div>
+    </div>
+
+    <div class="profile-body">
+
+      <div class="profile-section">
+        <h2>À propos</h2>
+        <p>{{ p.bio }}</p>
+      </div>
+
+      <div class="profile-section">
+        <h2>Informations</h2>
+
+        <div class="profile-field">
+          <span>ID :</span>
+          <span>{{ p.id }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span>Email :</span>
+          <span>{{ p.email }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span>Membre depuis :</span>
+          <span>{{ p.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+} @else {
+  <p>Chargement du profil...</p>
+}
