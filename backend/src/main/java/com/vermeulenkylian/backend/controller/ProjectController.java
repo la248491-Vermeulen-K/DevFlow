@@ -1,10 +1,10 @@
 package com.vermeulenkylian.backend.controller;
 
-import com.vermeulenkylian.backend.DTO.CreateProjectRequestDto;
-import com.vermeulenkylian.backend.DTO.ProjectResponseDto;
-import com.vermeulenkylian.backend.DTO.UpdateProjectRequestDto;
+import com.vermeulenkylian.backend.DTO.*;
 import com.vermeulenkylian.backend.model.Project;
+import com.vermeulenkylian.backend.model.ProjectMember;
 import com.vermeulenkylian.backend.model.User;
+import com.vermeulenkylian.backend.service.ProjectMemberService;
 import com.vermeulenkylian.backend.service.ProjectService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectMemberService projectMemberService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, ProjectMemberService projectMemberService) {
         this.projectService = projectService;
+        this.projectMemberService = projectMemberService;
     }
 
     @GetMapping
@@ -51,5 +53,20 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public boolean deleteProject(@AuthenticationPrincipal User user, @PathVariable Long id) {
         return projectService.deleteProject(user,id);
+    }
+
+    @GetMapping("/{id}/members")
+    public List<ProjectMemberResponseDto> getProjectMembers(@AuthenticationPrincipal User requester, @PathVariable Long id) {
+        return projectMemberService.getProjectMembers(requester,id);
+    }
+
+    @DeleteMapping("/{id}/members/{userId}")
+    public boolean removeMember(@AuthenticationPrincipal User requester, @PathVariable Long id, @PathVariable Long userId) {
+        return projectMemberService.removeMember(requester,id,userId);
+    }
+
+    @PostMapping("/{id}/members")
+    public boolean addMember(@AuthenticationPrincipal User requester, @PathVariable Long id, @RequestBody AddMemberRequestDto dto) {
+        return projectMemberService.addMember(requester,id,dto);
     }
 }
