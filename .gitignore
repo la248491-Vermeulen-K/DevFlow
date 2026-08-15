@@ -83,5 +83,8 @@ DerivedData/
 .env.local
 *.pem
 *.key
+*.png
+*.jpg
+*.jpeg
 
 # End of custom additionsQ

@@ -18,6 +18,10 @@ public class User {
     private String password;
     @Column(nullable=false)
     private LocalDateTime createdAt;
+    private String bio;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
 
     public String getEmail() {
         return email;
@@ -57,5 +61,21 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

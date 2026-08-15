@@ -1,0 +1,65 @@
+@if (profile(); as p) {
+  <div class="profile">
+
+    <div class="profile-header">
+      <img
+        class="profile-avatar"
+        [src]="p.avatarUrl ? backendUrl + p.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
+        [alt]="'Photo de profil de ' + p.name"
+      >
+
+      <div class="profile-info">
+        <h1>{{ p.name }}</h1>
+        <p>{{ p.email }}</p>
+      </div>
+    </div>
+
+    <div class="profile-section avatar-section">
+      <h2>Photo de profil</h2>
+
+      <label for="avatar">Changer ma photo de profil</label>
+
+      <input
+        id="avatar"
+        type="file"
+        accept="image/*"
+        (change)="onAvatarSelected($event)"
+      >
+    </div>
+
+    @if (errorMessage != "") {
+        <p>{{ errorMessage }}</p>
+    }
+
+    <div class="profile-body">
+
+      <div class="profile-section">
+        <h2>À propos</h2>
+        <p>{{ p.bio }}</p>
+      </div>
+
+      <div class="profile-section">
+        <h2>Informations</h2>
+
+        <div class="profile-field">
+          <span>ID :</span>
+          <span>{{ p.id }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span>Email :</span>
+          <span>{{ p.email }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span>Membre depuis :</span>
+          <span>{{ p.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+} @else {
+  <p>Chargement du profil...</p>
+}

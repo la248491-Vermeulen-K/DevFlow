@@ -1,43 +1,23 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ProjectService } from '../project-service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-project-list',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss',
 })
-export class ProjectList implements OnInit, OnDestroy {
+export class ProjectList implements OnInit {
+  projects = signal<any[]>([]);
 
-  projects: any[] = [];
-
-  projectSubscription = new Subscription();
-  existSubscription = new Subscription();
-
-  constructor(private projectService: ProjectService) {}
+  private projectService = inject(ProjectService);
 
   ngOnInit(): void {
-    this.existSubscription = this.projectService.isProjectExists(1).subscribe({
+    this.projectService.getProjects().subscribe({
       next: (data: any) => {
-        console.log('Project exists:', data);
-      },
-      error: (error) => {
-        console.error('Error checking project existence:', error);
-      }
-    }); 
-    this.projectSubscription = this.projectService.getProjects().subscribe({
-      next: (data: any) => {
-        this.projects = data;
-      },
-      error: (error) => {
-        console.error('Erreur lors de la récupération des projets :', error);
+        this.projects.set(data);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.existSubscription.unsubscribe();
-    this.projectSubscription.unsubscribe();
   }
 }
