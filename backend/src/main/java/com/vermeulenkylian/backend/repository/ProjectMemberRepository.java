@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
     Optional<ProjectMember> findByUserIdAndProjectId(Long userId, Long projectId);
+    void deleteByProjectId(Long projectId);
 }

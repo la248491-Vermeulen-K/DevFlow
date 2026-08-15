@@ -15,6 +15,15 @@ public class Project {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Project() {}
+
+    public Project(Long id, String name, String description, LocalDateTime createdAt) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
+
     public Long getId() {
         return id;
     }
