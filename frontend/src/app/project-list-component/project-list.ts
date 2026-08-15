@@ -1,9 +1,10 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { ProjectService } from '../project-service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-project-list',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss',
 })
