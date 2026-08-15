@@ -1,6 +1,7 @@
 package com.vermeulenkylian.backend.repository;
 
 import com.vermeulenkylian.backend.model.ProjectMember;
+import com.vermeulenkylian.backend.model.enums.ProjectRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,4 +11,8 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
     Optional<ProjectMember> findByUserIdAndProjectId(Long userId, Long projectId);
     void deleteByProjectId(Long projectId);
     List<ProjectMember> findByProjectId(Long projectId);
+    List<ProjectMember> findByUserId(Long userId);
+    long countByProjectId(Long projectId);
+
+    ProjectRole getProjectMemberById(Long id);
 }

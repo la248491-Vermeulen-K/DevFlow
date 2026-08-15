@@ -2,6 +2,7 @@ package com.vermeulenkylian.backend.service;
 
 import com.vermeulenkylian.backend.DTO.CreateProjectRequestDto;
 import com.vermeulenkylian.backend.DTO.ProjectResponseDto;
+import com.vermeulenkylian.backend.DTO.ProjectSummaryDto;
 import com.vermeulenkylian.backend.DTO.UpdateProjectRequestDto;
 import com.vermeulenkylian.backend.model.Project;
 import com.vermeulenkylian.backend.model.ProjectMember;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,8 +28,22 @@ public class ProjectService {
         this.projectMemberRepository = projectMemberRepository;
         this.permissionService = permissionService;
     }
-    public List<Project> getProjects() {
-        return projectRepository.findAll();
+    public List<ProjectSummaryDto> getProjects(User user) {
+        List<ProjectSummaryDto> summaries = new ArrayList<>();
+        List<ProjectMember> projectMemberList = projectMemberRepository.findByUserId(user.getId());
+        for (ProjectMember projectMember : projectMemberList) {
+            Project project =projectMember.getProject();
+            ProjectSummaryDto projectSummaryDto = new ProjectSummaryDto(
+                    project.getId(),
+                    project.getName(),
+                    project.getDescription(),
+                    project.getCreatedAt(),
+                    projectMember.getRole(),
+                    projectMemberRepository.countByProjectId(project.getId())
+            );
+            summaries.add(projectSummaryDto);
+        }
+        return summaries;
     }
     public boolean existById(Long id) {
         return projectRepository.existsById(id);

@@ -25,15 +25,8 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<ProjectResponseDto> getProjects() {
-        return projectService.getProjects().stream()
-                .map(project -> new ProjectResponseDto(
-                        project.getId(),
-                        project.getName(),
-                        project.getDescription(),
-                        project.getCreatedAt()
-                ))
-                .collect(Collectors.toList());
+    public List<ProjectSummaryDto> getProjects(@AuthenticationPrincipal User user) {
+        return projectService.getProjects(user);
     }
     @GetMapping("/{id}/exists")
     public boolean isExist(@PathVariable Long id) {
