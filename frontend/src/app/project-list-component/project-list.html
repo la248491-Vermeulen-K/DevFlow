@@ -1,13 +1,51 @@
 <div class="project-page">
-  <h1>Projects</h1>
+
+  <div class="project-page__header">
+    <div>
+      <h1>Projects</h1>
+      <p>Gérez et consultez vos projets.</p>
+    </div>
+
+    <button
+      type="button"
+      class="project-page__create"
+      (click)="createProject()"
+    >
+      <span>+</span>
+      Nouveau projet
+    </button>
+  </div>
 
   <div class="project-grid">
     @for (project of projects(); track project.id) {
-      <div class="project-card">
-        <h2>{{ project.name }}</h2>
-        <p class="project-card__description">{{ project.description }}</p>
-        <p class="project-card__meta">créé le {{ project.createdAt | date:'dd/MM/yyyy' }}</p>
+      <article class="project-card">
+        <div class="project-card__content">
+          <h2>{{ project.name }}</h2>
+
+          <p class="project-card__description">
+            {{ project.description || 'Aucune description' }}
+          </p>
+        </div>
+
+        <p class="project-card__meta">
+          Créé le {{ project.createdAt | date:'dd/MM/yyyy' }}
+        </p>
+      </article>
+    } @empty {
+      <div class="project-empty">
+        <h2>Aucun projet</h2>
+        <p>Commencez par créer votre premier projet.</p>
+
+        <button
+          type="button"
+          class="project-page__create"
+          (click)="createProject()"
+        >
+          <span>+</span>
+          Créer un projet
+        </button>
       </div>
     }
   </div>
+
 </div>

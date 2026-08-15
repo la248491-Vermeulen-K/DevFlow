@@ -16,6 +16,20 @@
   padding: 3.5rem 2rem;
 }
 
+.project-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  p {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted, #8c93a6);
+    font-size: 0.9rem;
+  }
+}
+
 h1 {
   font-family: var(--font-mono, "IBM Plex Mono", monospace);
   font-size: 1.4rem;
@@ -25,6 +39,48 @@ h1 {
     content: "~/ ";
     color: var(--color-text-muted, #8c93a6);
     font-weight: 400;
+  }
+}
+
+.project-page__create {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+
+  padding: 0.6rem 1rem;
+
+  background: var(--color-accent, #4c82f7);
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  color: #fff;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  box-shadow: 0 4px 14px rgba(76, 130, 247, 0.2);
+
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.1s ease;
+
+  span {
+    font-family: var(--font-mono, "IBM Plex Mono", monospace);
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: #3d6fe0;
+    box-shadow: 0 6px 20px rgba(76, 130, 247, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -104,6 +160,38 @@ h1 {
   }
 }
 
+.project-empty {
+  grid-column: 1 / -1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+
+  padding: 3.5rem 2rem;
+
+  background: rgba(23, 27, 36, 0.6);
+  border: 1px dashed rgba(139, 148, 158, 0.25);
+  border-radius: 8px;
+
+  h2 {
+    font-family: var(--font-mono, "IBM Plex Mono", monospace);
+    font-size: 0.9rem;
+    color: var(--color-text-muted, #8c93a6);
+    margin: 0;
+
+    &::before { content: none; }
+  }
+
+  p {
+    color: var(--color-text-muted, #8c93a6);
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+  }
+}
+
 .form-error {
   display: flex;
   align-items: flex-start;
@@ -146,10 +234,16 @@ h1 {
   .project-page {
     padding: 2rem 1rem;
   }
+
+  .project-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .project-card,
+  .project-page__create,
   .form-error {
     transition: none;
     animation: none;

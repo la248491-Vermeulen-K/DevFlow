@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ProjectResponse } from './models/project-response';
+import { ProjectSummary } from './models/project-summary-response';
 
 @Injectable({
   providedIn: 'root',
@@ -12,10 +13,14 @@ export class ProjectService {
   constructor(private http: HttpClient) {}
 
   getProjects() {
-    return this.http.get<ProjectResponse[]>(this.backendUrl);
+    return this.http.get<ProjectSummary[]>(this.backendUrl);
   }
 
   isProjectExists(projectId: number) {
     return this.http.get(`${this.backendUrl}/${projectId}/exists`);
+  }
+
+  createProject(name: string, description: string){
+    return this.http.post<ProjectResponse>(`${this.backendUrl}`, {name, description})
   }
 }
