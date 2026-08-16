@@ -1,0 +1,50 @@
+<div class="auth-page">
+  <div class="terminal-card">
+
+    <div class="terminal-card__titlebar">
+      <span class="dot dot--red" aria-hidden="true"></span>
+      <span class="dot dot--amber" aria-hidden="true"></span>
+      <span class="dot dot--green" aria-hidden="true"></span>
+      <span class="terminal-card__filename">add-member.sh</span>
+    </div>
+
+    <form class="terminal-card__body" [formGroup]="addMemberForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="terminal-card__prompt">
+        <span class="prompt-symbol">$</span> ./add-member.sh
+      </div>
+
+      <div class="form-group">
+        <label for="email">email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="john.doe@example.com"
+          autocomplete="email"
+          [attr.aria-invalid]="addMemberForm.get('email')?.invalid && addMemberForm.get('email')?.touched"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="role">role</label>
+        <select id="role" formControlName="role">
+          <option value="MEMBER">MEMBER</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+
+      <div class="terminal-card__actions">
+        <input type="submit" class="btn btn--primary" [disabled]="addMemberForm.invalid">
+        <button type="button" class="btn btn--secondary" (click)="onCancel()">
+          Annuler
+        </button>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+      }
+
+    </form>
+  </div>
+</div>
