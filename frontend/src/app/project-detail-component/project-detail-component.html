@@ -1,0 +1,126 @@
+<div class="project-detail">
+
+  <header class="project-detail__header">
+    <div>
+      <span class="project-detail__eyebrow">PROJECT</span>
+      <h1>Project members</h1>
+      <p>Liste des membres associés à ce projet.</p>
+    </div>
+
+    <div class="project-detail__actions">
+      <button type="button" class="btn btn--secondary" (click)="backButton()">
+        Retour
+      </button>
+
+      <button type="button" class="btn btn--primary" (click)="addMemberButton()">
+        + Ajouter un membre
+      </button>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert alert--error">
+      <span class="alert__icon">!</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <section class="members-section">
+
+    <div class="members-section__header">
+      <div>
+        <h2>Membres</h2>
+        <p>
+          {{ projectMembersList().length || 0 }}
+          membre{{ (projectMembersList().length || 0) > 1 ? 's' : '' }}
+        </p>
+      </div>
+    </div>
+
+    @if (projectMembersList().length) {
+
+      <div class="members-table">
+
+        <div class="members-table__header">
+        <span>Membre</span>
+        <span>Email</span>
+        <span>Rôle</span>
+        <span>Rejoint le</span>
+        <span></span>
+        </div>
+
+        @for (member of projectMembersList(); track member.id) {
+
+          <article class="member-row">
+
+            <div class="member-row__user">
+              <div class="member-avatar">
+                <img
+                [src]="member?.avatarUrl ? backendUrl + member?.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
+                [alt]="'Photo de profil de ' + member.name">
+              </div>
+
+              <div>
+                <h3>{{ member.name }}</h3>
+                <span>#{{ member.id }}</span>
+              </div>
+            </div>
+
+            <div class="member-row__email">
+              {{ member.email }}
+            </div>
+
+            <div>
+              <span
+                class="role-badge"
+                [class.role-badge--owner]="member.role === 'OWNER'"
+                [class.role-badge--member]="member.role !== 'OWNER'"
+              >
+                {{ member.role }}
+              </span>
+            </div>
+
+            <div class="member-row__date">
+              {{ member.joinedAt | date:'dd/MM/yyyy' }}
+            </div>
+            <div>
+                <button
+                    type="button"
+                    class="btn--danger-outline"
+                    [disabled]="member.role === 'OWNER'"
+                    (click)="deleteProjectMember(member.id)"
+                >
+                    Retirer
+                </button>
+                </div>
+
+
+          </article>
+
+        }
+
+      </div>
+
+    } @else if (!errorMessage()) {
+
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          👥
+        </div>
+
+        <h3>Aucun membre</h3>
+
+        <p>
+          Aucun membre n'est actuellement associé à ce projet.
+        </p>
+
+        <button type="button" class="btn btn--primary">
+          + Ajouter un membre
+        </button>
+      </div>
+
+    }
+
+  </section>
+
+</div>

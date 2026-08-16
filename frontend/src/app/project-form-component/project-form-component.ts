@@ -35,8 +35,4 @@ export class ProjectFormComponent {
       }
     })
   }
-
-  createProject(){
-    this.router.navigate(["/project/new"])
-  }
 }
