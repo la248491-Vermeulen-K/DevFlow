@@ -27,4 +27,8 @@ export class ProjectList implements OnInit {
   createProject(){
     this.router.navigate(["/projects/new"])
   }
+
+  openProject(projectId: number){
+    this.router.navigate([`/projects/${projectId}`])
+  }
 }
