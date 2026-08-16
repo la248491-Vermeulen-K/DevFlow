@@ -45,7 +45,7 @@ public class ProjectSummaryDto {
         }
 
         public void setDescription(String description) {
-            this.description = description;
+            this.description = description; 
         }
 
         public LocalDateTime getCreatedAt() {

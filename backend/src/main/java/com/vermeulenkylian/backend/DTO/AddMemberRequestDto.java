@@ -4,13 +4,13 @@ import com.vermeulenkylian.backend.model.enums.ProjectRole;
 
 public class AddMemberRequestDto {
     private String email;
-    private ProjectRole projectRole;
+    private ProjectRole role;
 
     public AddMemberRequestDto() {}
 
-    public AddMemberRequestDto(String email, ProjectRole projectRole) {
+    public AddMemberRequestDto(String email, ProjectRole role) {
         this.email = email;
-        this.projectRole = projectRole;
+        this.role = role;
     }
 
     public String getEmail() {
@@ -22,10 +22,10 @@ public class AddMemberRequestDto {
     }
 
     public ProjectRole getProjectRole() {
-        return projectRole;
+        return role;
     }
 
     public void setProjectRole(ProjectRole projectRole) {
-        this.projectRole = projectRole;
+        this.role = projectRole;
     }
 }

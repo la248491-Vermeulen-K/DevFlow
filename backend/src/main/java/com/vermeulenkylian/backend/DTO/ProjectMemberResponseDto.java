@@ -9,15 +9,17 @@ public class ProjectMemberResponseDto {
     private String name;
     private String email;
     private ProjectRole role;
+    private String avatarUrl;
     private LocalDateTime joinedAt;
 
     public ProjectMemberResponseDto() {}
 
-    public ProjectMemberResponseDto(Long id, String name, String email, ProjectRole role, LocalDateTime joinedAt) {
+    public ProjectMemberResponseDto(Long id, String name, String email, ProjectRole role, String avatarUrl, LocalDateTime joinedAt) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
+        this.avatarUrl = avatarUrl;
         this.joinedAt = joinedAt;
     }
 
@@ -59,5 +61,13 @@ public class ProjectMemberResponseDto {
 
     public void setJoinedAt(LocalDateTime joinedAt) {
         this.joinedAt = joinedAt;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

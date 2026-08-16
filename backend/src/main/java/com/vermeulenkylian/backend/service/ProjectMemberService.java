@@ -63,6 +63,9 @@ public class ProjectMemberService {
     }
 
     public List<ProjectMemberResponseDto> getProjectMembers(User requester, Long projectId) {
+        if(projectRepository.findById(projectId).isEmpty()){
+            throw new RuntimeException("Project not found");
+        }
         if (!permissionService.isMember(requester.getId(), projectId)) {
             throw new RuntimeException("You are not a member of this project");
         }
@@ -72,6 +75,7 @@ public class ProjectMemberService {
                         member.getUser().getName(),
                         member.getUser().getEmail(),
                         member.getRole(),
+                        member.getUser().getAvatarUrl(),
                         member.getJoinedAt()
                 ))
                 .collect(Collectors.toList());
