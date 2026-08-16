@@ -38,4 +38,16 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.getToken() !== null;
   }
+
+  refreshToken(refreshToken: string): Observable<string> {
+    return this.http.post(`${this.backendUrl}/refresh`, { refreshToken }, { responseType: 'text' });
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  getRefreshToken(){
+    return localStorage.getItem('refreshToken')
+  }
 } 

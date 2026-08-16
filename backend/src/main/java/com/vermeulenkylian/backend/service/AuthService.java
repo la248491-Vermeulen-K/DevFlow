@@ -64,7 +64,6 @@ public class AuthService {
             throw new RuntimeException("Refresh token expiré");
         }
         User user = refreshToken.getUser();
-        String newToken = jwtService.generateToken(user);
-        return newToken;
+        return jwtService.generateToken(user);
     }
 }
