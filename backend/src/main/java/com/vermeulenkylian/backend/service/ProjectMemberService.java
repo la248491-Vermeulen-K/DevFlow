@@ -30,7 +30,7 @@ public class ProjectMemberService {
         this.projectRepository = projectRepository;
     }
 
-    public boolean addMember(User requester, Long projectId, AddMemberRequestDto dto){
+    public ProjectMemberResponseDto addMember(User requester, Long projectId, AddMemberRequestDto dto){
         if (!permissionService.isAtLeastAdmin(requester.getId(), projectId)){
             throw new RuntimeException("You don't have permission to add member");
         }
@@ -44,7 +44,15 @@ public class ProjectMemberService {
         member.setRole(dto.getProjectRole());
         member.setJoinedAt(LocalDateTime.now());
         projectMemberRepository.save(member);
-        return true;
+
+        return new ProjectMemberResponseDto(
+                newMember.getId(),
+                newMember.getName(),
+                newMember.getEmail(),
+                member.getRole(),
+                newMember.getAvatarUrl(),
+                member.getJoinedAt()
+        );
     }
 
     public boolean removeMember(User requester, Long projectId, Long userIdToRemove) {

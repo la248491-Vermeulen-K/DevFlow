@@ -11,7 +11,6 @@ export const routes: Routes = [
     { path: 'projects', children: [
         { path: '', component: ProjectList}, 
         { path: 'new', component: ProjectFormComponent},
-        { path: ':id/members', component: AddMemberFormComponent},
         {path: ':id', component: ProjectDetailComponent}],
         canActivate:[authGuard]
     },

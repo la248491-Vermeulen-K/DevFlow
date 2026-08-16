@@ -14,8 +14,8 @@ export class ProjectMemberService {
     return this.http.get<ProjectMemberResponse[]>(`${this.backendUrl}/${projectId}/members`)
   }
 
-  addMembers(projectId: number, email: string, role: string){
-    return this.http.post(`${this.backendUrl}/${projectId}/members`, {email, role})
+  addMember(projectId: number, email: string, role: string){
+    return this.http.post<ProjectMemberResponse>(`${this.backendUrl}/${projectId}/members`, { email, projectRole: role })
   }
 
   removeMember(projectId: number, userId: number){

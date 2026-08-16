@@ -3,16 +3,19 @@ import { ProjectMemberResponse } from '../models/project-member-response';
 import { ProjectMemberService } from '../project-member-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { AddMemberFormComponent } from "../add-member-form-component/add-member-form-component";
 
 @Component({
   selector: 'app-project-detail-component',
-  imports: [DatePipe],
+  imports: [DatePipe, AddMemberFormComponent],
   templateUrl: './project-detail-component.html',
   styleUrl: './project-detail-component.scss',
 })
 export class ProjectDetailComponent implements OnInit{
   projectMembersList = signal< ProjectMemberResponse[]>([]);
   backendUrl = "http://localhost:8080"
+  showAddMemberForm = signal(false);
+  projectIdFromRoute!: number
 
   errorMessage = signal<string | null>(null);
   
@@ -24,8 +27,8 @@ export class ProjectDetailComponent implements OnInit{
   
 
   ngOnInit(){
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.projectMemberService.getMembers(id).subscribe({
+    this.projectIdFromRoute = Number(this.route.snapshot.paramMap.get('id'));
+    this.projectMemberService.getMembers(this.projectIdFromRoute).subscribe({
       next: (data: ProjectMemberResponse[]) => {
           this.projectMembersList.set(data);
       },
@@ -43,8 +46,16 @@ export class ProjectDetailComponent implements OnInit{
   }
 
   addMemberButton(){
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.router.navigate([`projects`, id, 'members'])
+    this.showAddMemberForm.set(true)
+  }
+
+  onMemberAdded(member: ProjectMemberResponse): void {
+    this.projectMembersList.update(members => [
+      ...members,
+      member
+    ]);
+
+    this.showAddMemberForm.set(false);
   }
 
   deleteProjectMember(userId: number): void {

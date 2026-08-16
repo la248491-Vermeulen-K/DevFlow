@@ -59,7 +59,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/members")
-    public boolean addMember(@AuthenticationPrincipal User requester, @PathVariable Long id, @RequestBody AddMemberRequestDto dto) {
+    public ProjectMemberResponseDto addMember(@AuthenticationPrincipal User requester, @PathVariable Long id, @RequestBody AddMemberRequestDto dto) {
         return projectMemberService.addMember(requester,id,dto);
     }
 }

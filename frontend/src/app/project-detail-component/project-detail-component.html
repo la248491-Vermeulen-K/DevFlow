@@ -1,5 +1,5 @@
 <div class="project-detail">
-
+@if (!showAddMemberForm()) {
   <header class="project-detail__header">
     <div>
       <span class="project-detail__eyebrow">PROJECT</span>
@@ -114,7 +114,7 @@
           Aucun membre n'est actuellement associé à ce projet.
         </p>
 
-        <button type="button" class="btn btn--primary">
+        <button type="button" class="btn btn--primary" (click)="addMemberButton()">
           + Ajouter un membre
         </button>
       </div>
@@ -122,5 +122,13 @@
     }
 
   </section>
+}
+  @if (showAddMemberForm()) {
+     <app-add-member-form-component
+       [projectId]="projectIdFromRoute"
+       (memberAdded)="onMemberAdded($event)"
+       (cancelled)="showAddMemberForm.set(false)"
+     />
+   }
 
 </div>

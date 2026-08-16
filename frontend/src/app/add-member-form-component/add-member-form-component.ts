@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { ProjectMemberService } from '../project-member-service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProjectMemberResponse } from '../models/project-member-response';
 
 @Component({
   selector: 'app-add-member-form-component',
@@ -12,10 +12,12 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class AddMemberFormComponent {
   errorMessage = signal<string | null>(null);
 
+  @Input({required: true}) projectId!: number;
+  @Output() memberAdded = new EventEmitter<ProjectMemberResponse>();
+  @Output() cancelled = new EventEmitter<void>();
+
   constructor(
     private memberService: ProjectMemberService,
-    private router: Router,
-    private route: ActivatedRoute,
   ) {}
 
   addMemberForm = new FormGroup({
@@ -24,24 +26,22 @@ export class AddMemberFormComponent {
   });
 
   onSubmit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
     this.errorMessage.set(null);
 
     if (this.addMemberForm.invalid) {
       console.error('Form is invalid');
-      return;
+      return; 
     }
 
     const email = this.addMemberForm.get('email')?.value ?? '';
     const role = this.addMemberForm.get('role')?.value ?? '';
-    alert(role)
-    this.memberService.addMembers(id, email, role).subscribe({
-        next: () => {
-          this.router.navigate(["/projects", id])
+    this.memberService.addMember(this.projectId, email, role).subscribe({
+        next: (response: ProjectMemberResponse) => {
+          this.memberAdded.emit(response);
         },
         error: (error) => {
         if (error.status === 401 || error.status === 403) {
-          this.router.navigate(['/projects']);
+          this.errorMessage.set('Vous n\'avez pas la permission d\'ajouter un membre à ce projet');
         } else {
           this.errorMessage.set('Une erreur est survenue lors de l\'ajout du membre');
         }
@@ -50,7 +50,6 @@ export class AddMemberFormComponent {
   }
 
   onCancel(){
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.router.navigate(["/projects", id])
+    this.cancelled.emit()
   }
 }

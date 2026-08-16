@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
+
 import { AuthService } from './auth-service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -27,7 +28,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
 
-      // On ne tente pas de refresh pour login/refresh
       if (
         error.status !== 401 ||
         isLoginRequest ||
@@ -38,7 +38,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       const refreshToken = authService.getRefreshToken();
 
-      // Aucun refresh token disponible
       if (!refreshToken) {
         authService.logout();
         router.navigate(['/login']);
@@ -46,24 +45,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // Tentative de refresh
       return authService.refreshToken(refreshToken).pipe(
-        switchMap((response) => {
 
-          // Stocke le nouveau JWT
-          authService.setToken(response.accessToken);
+        switchMap((response: string) => {
 
-          // Rejoue la requête originale avec le nouveau JWT
+          authService.setToken(response);
+
           const retryReq = req.clone({
             setHeaders: {
-              Authorization: `Bearer ${response.accessToken}`
+              Authorization: `Bearer ${response}`
             }
           });
 
           return next(retryReq);
         }),
 
-        // Le refresh a échoué
         catchError((refreshError) => {
           authService.logout();
           router.navigate(['/login']);
