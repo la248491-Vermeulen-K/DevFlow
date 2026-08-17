@@ -1,13 +1,16 @@
 package com.vermeulenkylian.backend.service;
 
+import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
 import com.vermeulenkylian.backend.model.Project;
 import com.vermeulenkylian.backend.model.Task;
 import com.vermeulenkylian.backend.model.User;
+import com.vermeulenkylian.backend.model.enums.TaskPriority;
 import com.vermeulenkylian.backend.model.enums.TaskStatus;
 import com.vermeulenkylian.backend.repository.ProjectRepository;
 import com.vermeulenkylian.backend.repository.TaskRepository;
+import com.vermeulenkylian.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,11 +24,13 @@ public class TaskService {
     private final ProjectRepository projectRepository;
     private final PermissionService permissionService;
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(ProjectRepository projectRepository, PermissionService permissionService, TaskRepository taskRepository) {
+    public TaskService(ProjectRepository projectRepository, PermissionService permissionService, TaskRepository taskRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.permissionService = permissionService;
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public TaskResponseDto createTask(User creator, Long projectId, CreateTaskRequestDto dto){
@@ -40,8 +45,9 @@ public class TaskService {
         task.setTitle(dto.getTitle());
         task.setCreatedAt(LocalDateTime.now());
         task.setStatus(TaskStatus.TODO);
+        task.setPriority(TaskPriority.MEDIUM);
         taskRepository.save(task);
-        return new TaskResponseDto(task.getId(),task.getDescription(),task.getTitle(),task.getStatus(),task.getCreatedAt());
+        return toDto(task);
     }
 
     public List<TaskResponseDto> getTasks(User user, Long projectId){
@@ -49,13 +55,52 @@ public class TaskService {
             throw new RuntimeException("You are not a member of this project");
         }
         return taskRepository.findByProjectId(projectId).stream()
-                .map(task -> new TaskResponseDto(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getStatus(),
-                        task.getCreatedAt()
-                ))
+                .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public TaskResponseDto updateStatus(User user, Long taskId, TaskStatus newStatus){
+        Task task = taskRepository.findById(taskId).orElseThrow(()->new RuntimeException("Task not found"));
+        if(!permissionService.isMember(user.getId(),task.getProject().getId())){
+            throw new RuntimeException("You are not a member of the project");
+        }
+        task.setStatus(newStatus);
+        taskRepository.save(task);
+        return toDto(task);
+    }
+
+    public TaskResponseDto assignTask(User user, Long taskId, AssignTaskRequestDto dto){
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if(!permissionService.isMember(user.getId(), task.getProject().getId())){
+            throw new RuntimeException("You are not a member of the project");
+        }
+
+        User assignee = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!permissionService.isMember(assignee.getId(), task.getProject().getId())){
+            throw new RuntimeException("This user is not a member of the project and cannot be assigned");
+        }
+
+        task.setAssignee(assignee);
+        taskRepository.save(task);
+        return toDto(task);
+    }
+
+    private TaskResponseDto toDto(Task task) {
+        Long assigneeId = task.getAssignee() != null ? task.getAssignee().getId() : null;
+        String assigneeName = task.getAssignee() != null ? task.getAssignee().getName() : null;
+
+        return new TaskResponseDto(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getCreatedAt(),
+                assigneeId,
+                assigneeName,
+                task.getPriority(),
+                task.getDeadline()
+        );
     }
 }

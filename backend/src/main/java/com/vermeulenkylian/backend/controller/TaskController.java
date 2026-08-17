@@ -1,7 +1,9 @@
 package com.vermeulenkylian.backend.controller;
 
+import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
+import com.vermeulenkylian.backend.DTO.UpdateTaskStatusRequestDto;
 import com.vermeulenkylian.backend.model.Task;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.service.TaskService;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/projects/{projectId}/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
     private final TaskService taskService;
 
@@ -19,14 +21,15 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping
-    public TaskResponseDto createTask(@AuthenticationPrincipal User user, @RequestBody CreateTaskRequestDto dto, @PathVariable Long projectId) {
-        return taskService.createTask(user,projectId,dto);
+    @PatchMapping("/{id}/status")
+    public TaskResponseDto updateTaskStatus(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody UpdateTaskStatusRequestDto dto) {
+        return taskService.updateStatus(user, id, dto.getNewStatus());
     }
 
-    @GetMapping
-    public List<TaskResponseDto> getTasks(@AuthenticationPrincipal User user, @PathVariable Long projectId) {
-        return taskService.getTasks(user, projectId);
+    @PatchMapping("/{id}/assign")
+    public TaskResponseDto assignTask(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody AssignTaskRequestDto dto) {
+        return taskService.assignTask(user, id, dto);
     }
+
 
 }

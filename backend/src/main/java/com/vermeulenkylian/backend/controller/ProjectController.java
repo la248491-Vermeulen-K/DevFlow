@@ -6,6 +6,7 @@ import com.vermeulenkylian.backend.model.ProjectMember;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.service.ProjectMemberService;
 import com.vermeulenkylian.backend.service.ProjectService;
+import com.vermeulenkylian.backend.service.TaskService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,12 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ProjectMemberService projectMemberService;
+    private final TaskService taskService;
 
-    public ProjectController(ProjectService projectService, ProjectMemberService projectMemberService) {
+    public ProjectController(ProjectService projectService, ProjectMemberService projectMemberService, TaskService taskService) {
         this.projectService = projectService;
         this.projectMemberService = projectMemberService;
+        this.taskService = taskService;
     }
 
     @GetMapping
@@ -61,5 +64,15 @@ public class ProjectController {
     @PostMapping("/{id}/members")
     public ProjectMemberResponseDto addMember(@AuthenticationPrincipal User requester, @PathVariable Long id, @RequestBody AddMemberRequestDto dto) {
         return projectMemberService.addMember(requester,id,dto);
+    }
+
+    @PostMapping("/{projectId}/tasks")
+    public TaskResponseDto createTask(@AuthenticationPrincipal User user, @RequestBody CreateTaskRequestDto dto, @PathVariable Long projectId) {
+        return taskService.createTask(user,projectId,dto);
+    }
+
+    @GetMapping("/{projectId}/tasks")
+    public List<TaskResponseDto> getTasks(@AuthenticationPrincipal User user, @PathVariable Long projectId) {
+        return taskService.getTasks(user, projectId);
     }
 }

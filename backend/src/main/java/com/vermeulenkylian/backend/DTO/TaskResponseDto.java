@@ -1,5 +1,6 @@
 package com.vermeulenkylian.backend.DTO;
 
+import com.vermeulenkylian.backend.model.enums.TaskPriority;
 import com.vermeulenkylian.backend.model.enums.TaskStatus;
 
 import java.time.LocalDateTime;
@@ -10,15 +11,23 @@ public class TaskResponseDto {
     private String description;
     private TaskStatus status;
     private LocalDateTime createdAt;
+    private Long assigneeId;
+    private String assigneeName;
+    private TaskPriority priority;
+    private LocalDateTime deadline;
 
     public TaskResponseDto() {}
 
-    public TaskResponseDto(Long id, String title, String description, TaskStatus status, LocalDateTime createdAt) {
+    public TaskResponseDto(Long id, String title, String description, TaskStatus status, LocalDateTime createdAt, Long assigneeId, String assigneeName, TaskPriority priority, LocalDateTime deadline) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.createdAt = createdAt;
+        this.assigneeId = assigneeId;
+        this.assigneeName = assigneeName;
+        this.priority = priority;
+        this.deadline = deadline;
     }
 
     public Long getId() {
@@ -59,5 +68,37 @@ public class TaskResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
     }
 }
