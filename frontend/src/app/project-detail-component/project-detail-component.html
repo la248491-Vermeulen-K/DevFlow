@@ -51,7 +51,7 @@
 
         @for (member of projectMembersList(); track member.id) {
 
-          <article class="member-row">
+          <article class="member-row" (click)="showProfile(member.id)">
 
             <div class="member-row__user">
               <div class="member-avatar">

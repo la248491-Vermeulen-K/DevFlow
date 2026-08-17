@@ -59,21 +59,25 @@ export class ProjectDetailComponent implements OnInit{
   }
 
   deleteProjectMember(userId: number): void {
-  const projectId = Number(this.route.snapshot.paramMap.get('id'));
+    const projectId = Number(this.route.snapshot.paramMap.get('id'));
 
-  this.projectMemberService.removeMember(projectId, userId).subscribe({
-    next: () => {
-      this.projectMembersList.update(members =>
-        members.filter(member => member.id !== userId)
-      );
-    },
-    error: (error) => {
-      console.error('Erreur lors de la suppression du membre :', error);
+    this.projectMemberService.removeMember(projectId, userId).subscribe({
+      next: () => {
+        this.projectMembersList.update(members =>
+          members.filter(member => member.id !== userId)
+        );
+      },
+      error: (error) => {
+        console.error('Erreur lors de la suppression du membre :', error);
 
-      this.errorMessage.set(
-        'Impossible de supprimer le membre.'
-      );
-    }
-  });
-}
+        this.errorMessage.set(
+          'Impossible de supprimer le membre.'
+        );
+      }
+    });
+  }
+
+  showProfile(id: number){
+    //add backend endpoint first 
+  }
 }
