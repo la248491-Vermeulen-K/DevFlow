@@ -1,57 +1,551 @@
-/* You can add global styles to this file, and also import other style files */
-/* Reset CSS */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
+// ============================================================
+// src/styles.scss — fichier global UNIQUE
+// Contient : tokens de design, reset, typographie, et tous les
+// composants partagés entre pages (terminal-card, boutons, formulaires,
+// alertes, badges). Les fichiers .scss de composants ne doivent PLUS
+// redéfinir ces classes — seulement leur mise en page spécifique.
+//
+// Police à ajouter dans le <head> de src/index.html :
+// <link rel="preconnect" href="https://fonts.googleapis.com">
+// <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+// <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+// ============================================================
+
+:root {
+  // Couleurs
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-hover: #1c2129;
+  --color-border: #262b38;
+  --color-border-soft: rgba(139, 148, 158, 0.18);
+  --color-text: #e4e7ef;
+  --color-text-muted: #8c93a6;
+  --color-accent: #4c82f7;
+  --color-accent-dim: rgba(76, 130, 247, 0.1);
+  --color-success: #3fbe8e;
+  --color-success-dim: rgba(63, 190, 142, 0.1);
+  --color-danger: #e2596b;
+  --color-danger-dim: rgba(226, 89, 107, 0.08);
+  --color-warning: #e8a33d;
+
+  // Typographie
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  // Échelle d'espacement
+  --space-xs: 0.375rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3.5rem;
+
+  // Rayon / bordure
+  --radius-sm: 5px;
+  --radius: 8px;
+  --radius-lg: 10px;
+
+  // Ombres
+  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.015);
+}
+
+// ============================================================
+// Reset
+// ============================================================
+
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  min-height: 100%;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
-  background: #fff;
-  color: #000;
-}
-
-html, body {
   height: 100%;
   overflow-x: hidden;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+ul, ol { list-style: none; margin: 0; padding: 0; }
+img, svg, video { display: block; max-width: 100%; }
+button, input, textarea, select { font: inherit; }
+a { color: inherit; text-decoration: none; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-button {
+// ============================================================
+// Typographie
+// ============================================================
+
+h1, h2, h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text);
+}
+
+h1 { font-size: 1.45rem; }
+
+h2 {
+  font-size: 0.85rem;
+  text-transform: lowercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+
+  &::before {
+    content: '# ';
+    color: var(--color-accent);
+  }
+}
+
+p { margin: 0 0 var(--space-sm); color: var(--color-text); }
+
+a.link {
+  color: var(--color-accent);
+  &:hover { text-decoration: underline; }
+}
+
+// ============================================================
+// Layout partagé — pages centrées type "terminal"
+// (login, formulaires, formulaires intégrés)
+// ============================================================
+
+.auth-page {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(76, 130, 247, 0.08), transparent 45%),
+    var(--color-bg);
+}
+
+// variante utilisée quand le formulaire est intégré dans une autre page
+// (pas de min-height plein écran, pas de radial-gradient dupliqué)
+.auth-page--embedded {
+  min-height: 0;
+  background: none;
+  padding: var(--space-lg) 0;
+  align-items: flex-start;
+}
+
+// ============================================================
+// Terminal card — le composant signature de l'app
+// ============================================================
+
+.terminal-card {
+  width: 100%;
+  max-width: 400px;
+
+  background: rgba(22, 27, 34, 0.92);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: blur(14px);
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: rgba(76, 130, 247, 0.35);
+    box-shadow: var(--shadow-elevated), 0 0 40px rgba(76, 130, 247, 0.06);
+  }
+}
+
+.terminal-card__titlebar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+
+  background: rgba(13, 17, 23, 0.9);
+  border-bottom: 1px solid var(--color-border-soft);
+  user-select: none;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: transform 0.15s ease, filter 0.15s ease;
+
+  &--red { background: #ff5f57; }
+  &--amber { background: #febc2e; }
+  &--green { background: #28c840; }
+
+  &:hover { transform: scale(1.15); filter: brightness(1.15); }
+}
+
+.terminal-card__filename {
+  margin-left: 6px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.terminal-card__body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+}
+
+.terminal-card__prompt {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+
+  .prompt-symbol {
+    margin-right: 6px;
+    color: var(--color-success);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(63, 190, 142, 0.35);
+  }
+}
+
+.terminal-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+// ============================================================
+// Formulaires
+// ============================================================
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  & + .form-group { margin-top: var(--space-md); }
+
+  label {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: lowercase;
+
+    &::before {
+      content: "> ";
+      color: var(--color-success);
+      opacity: 0.85;
+    }
+  }
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--space-sm);
+
+  background: rgba(13, 17, 23, 0.85);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+
+  &::placeholder { color: #484f58; }
+  &:hover { border-color: rgba(139, 148, 158, 0.35); }
+
+  &:focus {
+    outline: none;
+    background: rgba(13, 17, 23, 1);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-dim);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+    &:focus { box-shadow: 0 0 0 3px var(--color-danger-dim); }
+  }
+}
+
+.form-group select {
+  appearance: none;
   cursor: pointer;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-text-muted) 50%),
+    linear-gradient(135deg, var(--color-text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+
+  option { background: var(--color-surface); color: var(--color-text); }
 }
 
-img,
-svg,
-video {
-  display: block;
-  max-width: 100%;
+// ============================================================
+// Boutons
+// ============================================================
+
+.btn {
+  height: 40px;
+  padding: 0 var(--space-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.1s ease,
+    opacity 0.16s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  &:active:not(:disabled) { transform: translateY(1px); }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.btn--primary {
+  background: var(--color-accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(76, 130, 247, 0.2);
+
+  &:hover:not(:disabled) {
+    background: #3d6fe0;
+    box-shadow: 0 6px 20px rgba(76, 130, 247, 0.28);
+    transform: translateY(-1px);
+  }
 }
 
-ul,
-ol {
-  list-style: none;
+// Bouton de soumission seul, en pleine largeur, avec un espacement au-dessus
+// du dernier champ — uniquement quand il est enfant direct du corps d'une
+// terminal-card (login, formulaire de projet). Dans une rangée d'actions
+// (.terminal-card__actions ou toute autre barre de boutons), il garde sa
+// taille naturelle, comme n'importe quel autre bouton.
+.terminal-card__body > .btn--primary {
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+// Espace entre deux boutons empilés à la suite (ex : "Créer" puis "Annuler"
+// en dessous, sans passer par .terminal-card__actions)
+.terminal-card__body > .btn + .btn {
+  margin-top: var(--space-sm);
+}
+
+.btn--secondary {
+  background: transparent;
+  border-color: var(--color-border-soft);
+  color: var(--color-text-muted);
+
+  &:hover:not(:disabled) {
+    border-color: rgba(139, 148, 158, 0.45);
+    color: var(--color-text);
+    background: rgba(139, 148, 158, 0.06);
+  }
+}
+
+// bouton compact pour actions destructives ponctuelles dans une liste
+// (retirer un membre, supprimer une tâche, etc.)
+.btn--danger-outline {
+  height: 30px;
+  padding: 0 0.7rem;
+
+  background: transparent;
+  border: 1px solid rgba(226, 89, 107, 0.25);
+  border-radius: var(--radius-sm);
+
+  color: var(--color-danger);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-danger-dim);
+    border-color: rgba(226, 89, 107, 0.4);
+  }
+
+  &:active:not(:disabled) { transform: translateY(1px); }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ============================================================
+// Messages d'état (erreur inline / alerte)
+// ============================================================
+
+.form-error {
+  display: flex;
+  align-items: flex-start;
+  width: fit-content;
+
+  margin: var(--space-md) 0 0;
+  padding: 0.65rem 0.75rem;
+
+  background: var(--color-danger-dim);
+  border: 1px solid rgba(226, 89, 107, 0.18);
+  border-left: 3px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+
+  color: var(--color-danger);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+
+  animation: fade-in-up 0.2s ease-out;
+
+  &::before {
+    content: "> Error: ";
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  margin-top: var(--space-md);
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+
+  animation: fade-in-up 0.2s ease-out;
+}
+
+.alert--error {
+  background: var(--color-danger-dim);
+  border: 1px solid rgba(226, 89, 107, 0.18);
+  border-left: 3px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.alert__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+
+  border: 1px solid currentColor;
+  border-radius: 50%;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+// ============================================================
+// Badges (rôles, statuts — réutilisable dans tout le projet)
+// ============================================================
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.55rem;
+
+  border: 1px solid var(--color-border-soft);
+  border-radius: 4px;
+  background: rgba(139, 148, 158, 0.06);
+
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge--accent {
+  background: var(--color-accent-dim);
+  border-color: rgba(76, 130, 247, 0.2);
+  color: var(--color-accent);
+}
+
+.badge--success {
+  background: var(--color-success-dim);
+  border-color: rgba(63, 190, 142, 0.18);
+  color: var(--color-success);
+}
+
+.badge--danger {
+  background: var(--color-danger-dim);
+  border-color: rgba(226, 89, 107, 0.2);
+  color: var(--color-danger);
+}
+
+// ============================================================
+// Animations
+// ============================================================
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ============================================================
+// Responsive
+// ============================================================
+
+@media (max-width: 480px) {
+  .auth-page { padding: var(--space-md); }
+  .terminal-card { max-width: 100%; }
+  .terminal-card__body { padding: 1.25rem; }
+
+  .terminal-card__actions {
+    flex-direction: column-reverse;
+    .btn { width: 100%; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-card,
+  .form-group input,
+  .form-group select,
+  .btn,
+  .dot,
+  .form-error,
+  .alert {
+    transition: none;
+    animation: none;
+  }
 }

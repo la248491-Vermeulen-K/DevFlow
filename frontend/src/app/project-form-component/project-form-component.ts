@@ -35,4 +35,8 @@ export class ProjectFormComponent {
       }
     })
   }
+
+  onCancel(){
+    this.router.navigate(["/projects"])
+  }
 }

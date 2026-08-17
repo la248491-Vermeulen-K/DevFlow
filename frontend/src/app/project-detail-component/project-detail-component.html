@@ -72,9 +72,10 @@
 
             <div>
               <span
-                class="role-badge"
-                [class.role-badge--owner]="member.role === 'OWNER'"
-                [class.role-badge--member]="member.role !== 'OWNER'"
+                class="badge"
+                [class.badge--accent]="member.role === 'OWNER'"
+                [class.badge--danger]="member.role === 'ADMIN'"
+                [class.badge--success]="member.role === 'MEMBER'"
               >
                 {{ member.role }}
               </span>
