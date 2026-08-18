@@ -1,9 +1,11 @@
 package com.vermeulenkylian.backend.DTO;
 
+import com.vermeulenkylian.backend.model.Label;
 import com.vermeulenkylian.backend.model.enums.TaskPriority;
 import com.vermeulenkylian.backend.model.enums.TaskStatus;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class TaskResponseDto {
     private Long id;
@@ -15,10 +17,11 @@ public class TaskResponseDto {
     private String assigneeName;
     private TaskPriority priority;
     private LocalDateTime deadline;
+    private Set<LabelResponseDto> labels;
 
     public TaskResponseDto() {}
 
-    public TaskResponseDto(Long id, String title, String description, TaskStatus status, LocalDateTime createdAt, Long assigneeId, String assigneeName, TaskPriority priority, LocalDateTime deadline) {
+    public TaskResponseDto(Long id, String title, String description, TaskStatus status, LocalDateTime createdAt, Long assigneeId, String assigneeName, TaskPriority priority, LocalDateTime deadline,Set<LabelResponseDto> labels) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -28,6 +31,16 @@ public class TaskResponseDto {
         this.assigneeName = assigneeName;
         this.priority = priority;
         this.deadline = deadline;
+        this.labels = labels;
+    }
+
+
+    public Set<LabelResponseDto> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Set<LabelResponseDto> labels) {
+        this.labels = labels;
     }
 
     public Long getId() {

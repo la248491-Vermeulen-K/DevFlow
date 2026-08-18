@@ -5,6 +5,9 @@ import com.vermeulenkylian.backend.model.enums.TaskStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 public class Task {
     @Id
@@ -26,6 +29,13 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
+    @ManyToMany
+    @JoinTable(
+            name = "task_label",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
+    private Set<Label> labels = new HashSet<>();
 
     public Task() {}
 
@@ -111,5 +121,13 @@ public class Task {
 
     public void setAssignee(User assignee) {
         this.assignee = assignee;
+    }
+
+    public Set<Label> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Set<Label> labels) {
+        this.labels = labels;
     }
 }

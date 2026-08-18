@@ -3,6 +3,8 @@ package com.vermeulenkylian.backend.service;
 import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
+import com.vermeulenkylian.backend.mapper.TaskMapper;
+import com.vermeulenkylian.backend.model.Label;
 import com.vermeulenkylian.backend.model.Project;
 import com.vermeulenkylian.backend.model.Task;
 import com.vermeulenkylian.backend.model.User;
@@ -16,7 +18,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.vermeulenkylian.backend.mapper.TaskMapper.toDto;
 
 @Service
 public class TaskService {
@@ -55,7 +60,7 @@ public class TaskService {
             throw new RuntimeException("You are not a member of this project");
         }
         return taskRepository.findByProjectId(projectId).stream()
-                .map(this::toDto)
+                .map(TaskMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -85,22 +90,5 @@ public class TaskService {
         task.setAssignee(assignee);
         taskRepository.save(task);
         return toDto(task);
-    }
-
-    private TaskResponseDto toDto(Task task) {
-        Long assigneeId = task.getAssignee() != null ? task.getAssignee().getId() : null;
-        String assigneeName = task.getAssignee() != null ? task.getAssignee().getName() : null;
-
-        return new TaskResponseDto(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getCreatedAt(),
-                assigneeId,
-                assigneeName,
-                task.getPriority(),
-                task.getDeadline()
-        );
     }
 }
