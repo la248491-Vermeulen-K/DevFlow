@@ -173,16 +173,28 @@
                 <div class="task-card__top">
                   <h3>{{ task.title }}</h3>
 
-                  <select
-                    class="task-status-select"
-                    [value]="task.status"
-                    (change)="onStatusChange(task.id, $any($event.target).value)"
-                  >
-                    <option value="TODO">TODO</option>
-                    <option value="IN_PROGRESS">IN_PROGRESS</option>
-                    <option value="DONE">DONE</option>
-                  </select>
+                  <div class="task-card__top-actions">
+                    <select
+                      class="task-status-select"
+                      [value]="task.status"
+                      (change)="onStatusChange(task.id, $any($event.target).value)"
+                    >
+                      <option value="TODO">TODO</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="DONE">DONE</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      class="task-delete-btn"
+                      aria-label="Supprimer la tâche"
+                      (click)="deleteTask(task.id)"
+                    >
+                      🗑
+                    </button>
+                  </div>
                 </div>
+                
 
                 @if (task.description) {
                   <p class="task-card__description">{{ task.description }}</p>

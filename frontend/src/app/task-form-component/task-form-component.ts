@@ -21,6 +21,7 @@ export class TaskFormComponent {
   taskForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
     description: new FormControl(''),
+    priority: new FormControl('', Validators.required)
   });
 
   onSubmit() {
@@ -32,8 +33,9 @@ export class TaskFormComponent {
 
     const title = this.taskForm.get('title')?.value ?? '';
     const description = this.taskForm.get('description')?.value ?? '';
+    const priority = this.taskForm.get('priority')?.value ?? '';
 
-    this.taskService.createTask(this.projectId, title, description).subscribe({
+    this.taskService.createTask(this.projectId, title, description, priority).subscribe({
       next: (task) => {
         this.taskAdded.emit(task);
       },

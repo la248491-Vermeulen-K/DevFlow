@@ -50,7 +50,7 @@ public class TaskService {
         task.setTitle(dto.getTitle());
         task.setCreatedAt(LocalDateTime.now());
         task.setStatus(TaskStatus.TODO);
-        task.setPriority(TaskPriority.MEDIUM);
+        task.setPriority(dto.getPriority());
         taskRepository.save(task);
         return toDto(task);
     }

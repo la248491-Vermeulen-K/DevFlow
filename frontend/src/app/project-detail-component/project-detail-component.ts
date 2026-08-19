@@ -143,8 +143,16 @@ export class ProjectDetailComponent implements OnInit{
     });
   }
 
-  deleteTask(taskId: number): void{
-    //
+  deleteTask(taskId: number): void {
+    this.taskService.deleteTask(taskId).subscribe({
+      next: () => {
+        this.tasksList.update(tasks => tasks.filter(task => task.id !== taskId));
+      },
+      error: (error) => {
+        console.error('Erreur lors de la suppression de la tâche :', error);
+        this.errorMessage.set('Impossible de supprimer la tâche.');
+      }
+    });
   }
 
   showProfile(id: number){
