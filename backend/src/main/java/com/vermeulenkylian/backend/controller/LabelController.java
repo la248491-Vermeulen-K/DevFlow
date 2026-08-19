@@ -22,4 +22,8 @@ public class LabelController {
     public LabelResponseDto createLabel(@AuthenticationPrincipal User user, @PathVariable Long projectId, @RequestBody CreateLabelRequestDto dto) {
         return labelService.createLabel(user, projectId, dto);
     }
+    @DeleteMapping("/{labelId}")
+    public boolean deleteLabel(@AuthenticationPrincipal User user, @PathVariable Long labelId) {
+        return labelService.deleteLabel(user, labelId);
+    }
 }

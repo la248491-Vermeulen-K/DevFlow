@@ -91,4 +91,13 @@ public class TaskService {
         taskRepository.save(task);
         return toDto(task);
     }
+
+    public boolean deleteTask(User user,Long taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        if (!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())){
+            throw new RuntimeException("You don't have the permission to do that");
+        }
+        taskRepository.delete(task);
+        return true;
+    }
 }

@@ -45,14 +45,8 @@ public class LabelService {
     }
 
     public TaskResponseDto addLabelToTask(User user, Long taskId, Long labelId){
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
-        if(!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())){
-            throw new RuntimeException("You don't have the permission to do that");
-        }
-        Label label = labelRepository.findById(labelId).orElseThrow(() -> new RuntimeException("Label not found"));
-        if(!label.getProject().getId().equals(task.getProject().getId())){
-            throw new RuntimeException("This label does not belong to the task's project");
-        }
+        Task task = getTaskAndCheckPermission(user, taskId);
+        Label label = getLabelForTask(labelId, task);
         if(task.getLabels().contains(label)){
             throw new RuntimeException("This label is already attached to the task");
         }
@@ -62,19 +56,42 @@ public class LabelService {
     }
 
     public TaskResponseDto removeLabelFromTask(User user, Long taskId, Long labelId){
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
-        if(!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())){
-            throw new RuntimeException("You don't have the permission to do that");
-        }
-        Label label = labelRepository.findById(labelId).orElseThrow(() -> new RuntimeException("Label not found"));
-        if(!label.getProject().getId().equals(task.getProject().getId())){
-            throw new RuntimeException("This label does not belong to the task's project");
-        }
+        Task task = getTaskAndCheckPermission(user, taskId);
+        Label label = getLabelForTask(labelId, task);
         if(!task.getLabels().contains(label)){
             throw new RuntimeException("This label is not attached to the task");
         }
         task.getLabels().remove(label);
         taskRepository.save(task);
         return toDto(task);
+    }
+
+    public boolean deleteLabel(User user, Long labelId){
+        Label label = labelRepository.findById(labelId).orElseThrow(() -> new RuntimeException("Label not found"));
+        if(!permissionService.isAtLeastAdmin(user.getId(), label.getProject().getId())){
+            throw new RuntimeException("You don't have the permission to do that");
+        }
+        labelRepository.delete(label);
+        return true;
+    }
+
+    private Task getTaskAndCheckPermission(User user, Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())) {
+            throw new RuntimeException("You don't have the permission to do that");
+        }
+        return task;
+    }
+
+    private Label getLabelForTask(Long labelId, Task task) {
+        Label label = labelRepository.findById(labelId)
+                .orElseThrow(() -> new RuntimeException("Label not found"));
+
+        if (!label.getProject().getId().equals(task.getProject().getId())) {
+            throw new RuntimeException("Label does not belong to the task's project");
+        }
+        return label;
     }
 }

@@ -43,4 +43,8 @@ public class TaskController {
         return labelService.removeLabelFromTask(user, taskId, labelId);
     }
 
+    @DeleteMapping("/{taskId}")
+    public boolean deleteTask(@AuthenticationPrincipal User user, @PathVariable Long taskId) {
+        return taskService.deleteTask(user, taskId);
+    }
 }
