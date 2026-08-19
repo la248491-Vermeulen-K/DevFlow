@@ -63,6 +63,7 @@ public class SecurityConfig {
         config.addAllowedMethod("PUT");
         config.addAllowedMethod("DELETE");
         config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("PATCH");
 
         config.addAllowedHeader("Authorization");
         config.addAllowedHeader("Content-Type");

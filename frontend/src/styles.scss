@@ -513,6 +513,12 @@ a.link {
   color: var(--color-danger);
 }
 
+.badge--warning {
+  background: rgba(232, 163, 61, 0.1);
+  border-color: rgba(232, 163, 61, 0.22);
+  color: var(--color-warning);
+}
+
 // ============================================================
 // Animations
 // ============================================================

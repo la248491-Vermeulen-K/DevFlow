@@ -1,135 +1,257 @@
 <div class="project-detail">
-@if (!showAddMemberForm()) {
-  <header class="project-detail__header">
-    <div>
-      <span class="project-detail__eyebrow">PROJECT</span>
-      <h1>Project members</h1>
-      <p>Liste des membres associés à ce projet.</p>
-    </div>
 
-    <div class="project-detail__actions">
-      <button type="button" class="btn btn--secondary" (click)="backButton()">
-        Retour
-      </button>
+  @switch (viewMode()) {
 
-      <button type="button" class="btn btn--primary" (click)="addMemberButton()">
-        + Ajouter un membre
-      </button>
-    </div>
-  </header>
+    @case ('addMember') {
+      <app-add-member-form-component
+        [projectId]="projectIdFromRoute"
+        (memberAdded)="onMemberAdded($event)"
+        (cancelled)="viewMode.set('list')"
+      />
+    }
 
-  @if (errorMessage()) {
-    <div class="alert alert--error">
-      <span class="alert__icon">!</span>
-      <span>{{ errorMessage() }}</span>
-    </div>
-  }
+    @case ('addTask') {
+      <app-task-form-component
+        [projectId]="projectIdFromRoute"
+        (taskAdded)="onTaskAdded($event)"
+        (cancelled)="viewMode.set('list')"
+      />
+    }
 
-  <section class="members-section">
+    @default {
 
-    <div class="members-section__header">
-      <div>
-        <h2>Membres</h2>
-        <p>
-          {{ projectMembersList().length || 0 }}
-          membre{{ (projectMembersList().length || 0) > 1 ? 's' : '' }}
-        </p>
-      </div>
-    </div>
-
-    @if (projectMembersList().length) {
-
-      <div class="members-table">
-
-        <div class="members-table__header">
-        <span>Membre</span>
-        <span>Email</span>
-        <span>Rôle</span>
-        <span>Rejoint le</span>
-        <span></span>
+      <header class="project-detail__header">
+        <div>
+          <span class="project-detail__eyebrow">PROJECT</span>
+          <h1>Project members</h1>
+          <p>Liste des membres et des tâches associées à ce projet.</p>
         </div>
 
-        @for (member of projectMembersList(); track member.id) {
+        <div class="project-detail__actions">
+          <button type="button" class="btn btn--secondary" (click)="backButton()">
+            Retour
+          </button>
+        </div>
+      </header>
 
-          <article class="member-row" (click)="showProfile(member.id)">
+      @if (errorMessage()) {
+        <div class="alert alert--error">
+          <span class="alert__icon">!</span>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
 
-            <div class="member-row__user">
-              <div class="member-avatar">
-                <img
-                [src]="member?.avatarUrl ? backendUrl + member?.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
-                [alt]="'Photo de profil de ' + member.name">
-              </div>
+      <section class="members-section">
 
-              <div>
-                <h3>{{ member.name }}</h3>
-                <span>#{{ member.id }}</span>
-              </div>
+        <div class="members-section__header">
+          <div>
+            <h2>Membres</h2>
+            <p>
+              {{ projectMembersList().length || 0 }}
+              membre{{ (projectMembersList().length || 0) > 1 ? 's' : '' }}
+            </p>
+          </div>
+
+          <button type="button" class="btn btn--primary" (click)="addMemberButton()">
+            + Ajouter un membre
+          </button>
+        </div>
+
+        @if (projectMembersList().length) {
+
+          <div class="members-table">
+
+            <div class="members-table__header">
+              <span>Membre</span>
+              <span>Email</span>
+              <span>Rôle</span>
+              <span>Rejoint le</span>
+              <span></span>
             </div>
 
-            <div class="member-row__email">
-              {{ member.email }}
-            </div>
+            @for (member of projectMembersList(); track member.id) {
 
-            <div>
-              <span
-                class="badge"
-                [class.badge--accent]="member.role === 'OWNER'"
-                [class.badge--danger]="member.role === 'ADMIN'"
-                [class.badge--success]="member.role === 'MEMBER'"
-              >
-                {{ member.role }}
-              </span>
-            </div>
+              <article class="member-row">
 
-            <div class="member-row__date">
-              {{ member.joinedAt | date:'dd/MM/yyyy' }}
-            </div>
-            <div>
-                <button
+                <div class="member-row__user">
+                  <div class="member-avatar">
+                    <img
+                      [src]="member?.avatarUrl ? backendUrl + member?.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
+                      [alt]="'Photo de profil de ' + member.name"
+                    >
+                  </div>
+
+                  <div>
+                    <h3>{{ member.name }}</h3>
+                    <span>#{{ member.id }}</span>
+                  </div>
+                </div>
+
+                <div class="member-row__email">
+                  {{ member.email }}
+                </div>
+
+                <div>
+                  <span
+                    class="badge"
+                    [class.badge--accent]="member.role === 'OWNER'"
+                    [class.badge--danger]="member.role === 'ADMIN'"
+                    [class.badge--success]="member.role === 'MEMBER'"
+                  >
+                    {{ member.role }}
+                  </span>
+                </div>
+
+                <div class="member-row__date">
+                  {{ member.joinedAt | date:'dd/MM/yyyy' }}
+                </div>
+
+                <div class="member-row__actions">
+                  <button
                     type="button"
                     class="btn--danger-outline"
                     [disabled]="member.role === 'OWNER'"
                     (click)="deleteProjectMember(member.id)"
-                >
+                  >
                     Retirer
-                </button>
+                  </button>
                 </div>
 
+              </article>
 
-          </article>
+            }
+
+          </div>
+
+        } @else {
+
+          <div class="empty-state">
+            <div class="empty-state__icon">👥</div>
+            <h3>Aucun membre</h3>
+            <p>Aucun membre n'est actuellement associé à ce projet.</p>
+            <button type="button" class="btn btn--primary" (click)="addMemberButton()">
+              + Ajouter un membre
+            </button>
+          </div>
 
         }
 
-      </div>
+      </section>
 
-    } @else if (!errorMessage()) {
+      <section class="tasks-section">
 
-      <div class="empty-state">
-        <div class="empty-state__icon">
-          👥
+        <div class="members-section__header">
+          <div>
+            <h2>Tâches</h2>
+            <p>
+              {{ tasksList().length || 0 }}
+              tâche{{ (tasksList().length || 0) > 1 ? 's' : '' }}
+            </p>
+          </div>
+
+          <button type="button" class="btn btn--primary" (click)="addTaskButton()">
+            + Nouvelle tâche
+          </button>
         </div>
 
-        <h3>Aucun membre</h3>
+        @if (tasksList().length) {
 
-        <p>
-          Aucun membre n'est actuellement associé à ce projet.
-        </p>
+          <div class="tasks-grid">
 
-        <button type="button" class="btn btn--primary" (click)="addMemberButton()">
-          + Ajouter un membre
-        </button>
-      </div>
+            @for (task of tasksList(); track task.id) {
+
+              <article
+                class="task-card"
+                [class.task-card--status-todo]="task.status === 'TODO'"
+                [class.task-card--status-in-progress]="task.status === 'IN_PROGRESS'"
+                [class.task-card--status-done]="task.status === 'DONE'"
+                [class.task-card--priority-low]="task.priority === 'LOW'"
+                [class.task-card--priority-medium]="task.priority === 'MEDIUM'"
+                [class.task-card--priority-high]="task.priority === 'HIGH'"
+              >
+
+                <div class="task-card__top">
+                  <h3>{{ task.title }}</h3>
+
+                  <select
+                    class="task-status-select"
+                    [value]="task.status"
+                    (change)="onStatusChange(task.id, $any($event.target).value)"
+                  >
+                    <option value="TODO">TODO</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="DONE">DONE</option>
+                  </select>
+                </div>
+
+                @if (task.description) {
+                  <p class="task-card__description">{{ task.description }}</p>
+                }
+
+                @if (task.labels.length) {
+                  <div class="task-card__labels">
+                    @for (label of task.labels; track label.id) {
+                      <span class="label-pill" [style.background]="label.color">
+                        {{ label.name }}
+                      </span>
+                    }
+                  </div>
+                }
+
+                <div class="task-card__footer">
+                  <span
+                    class="badge"
+                    [class.badge--success]="task.priority === 'LOW'"
+                    [class.badge--warning]="task.priority === 'MEDIUM'"
+                    [class.badge--danger]="task.priority === 'HIGH'"
+                  >
+                    {{ task.priority }}
+                  </span>
+
+                  <span class="task-card__assignee">
+                    {{ task.assigneeName ?? 'Non assigné' }}
+                  </span>
+                </div>
+
+                <div class="task-card__assign">
+                  <input
+                    type="email"
+                    class="task-assign-input"
+                    [placeholder]="task.assigneeName ? 'réassigner à...' : 'email du membre à assigner'"
+                    #assignInput
+                  >
+                  <button
+                    type="button"
+                    class="btn--danger-outline"
+                    (click)="onAssign(task.id, assignInput.value); assignInput.value = ''"
+                  >
+                    {{ task.assigneeName ? 'Réassigner' : 'Assigner' }}
+                  </button>
+                </div>
+
+              </article>
+
+            }
+
+          </div>
+
+        } @else {
+
+          <div class="empty-state">
+            <div class="empty-state__icon">📋</div>
+            <h3>Aucune tâche</h3>
+            <p>Ce projet n'a pas encore de tâche.</p>
+            <button type="button" class="btn btn--primary" (click)="addTaskButton()">
+              + Nouvelle tâche
+            </button>
+          </div>
+
+        }
+
+      </section>
 
     }
 
-  </section>
-}
-  @if (showAddMemberForm()) {
-     <app-add-member-form-component
-       [projectId]="projectIdFromRoute"
-       (memberAdded)="onMemberAdded($event)"
-       (cancelled)="showAddMemberForm.set(false)"
-     />
-   }
+  }
 
 </div>
