@@ -1,0 +1,130 @@
+<div class="task-detail">
+
+  <button
+    type="button"
+    class="btn btn--secondary task-detail__back"
+    (click)="close.emit()"
+  >
+    ← Retour
+  </button>
+
+  <div class="task-detail__card">
+
+    <header class="task-detail__header">
+      <h1>{{ task.title }}</h1>
+
+      <button
+        type="button"
+        class="task-delete-btn"
+        aria-label="Supprimer la tâche"
+        (click)="onDelete()"
+      >
+        🗑
+      </button>
+    </header>
+
+    <div class="task-detail__badges">
+
+      <span
+        class="badge"
+        [class.badge--success]="task.priority === 'LOW'"
+        [class.badge--warning]="task.priority === 'MEDIUM'"
+        [class.badge--danger]="task.priority === 'HIGH'"
+      >
+        {{ task.priority }}
+      </span>
+
+      <span
+        class="badge"
+        [class.badge--accent]="task.status === 'IN_PROGRESS'"
+        [class.badge--success]="task.status === 'DONE'"
+      >
+        {{ task.status }}
+      </span>
+
+      <span class="task-detail__assignee">
+        {{ task.assigneeName ?? 'Non assigné' }}
+      </span>
+
+    </div>
+
+    @if (task.description) {
+      <p class="task-detail__description">
+        {{ task.description }}
+      </p>
+    }
+
+    @if (task.labels.length) {
+      <div class="task-detail__labels">
+
+        @for (label of task.labels; track label.id) {
+          <span
+            class="label-pill"
+            [style.background]="label.color"
+          >
+            {{ label.name }}
+          </span>
+        }
+
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <p class="form-error" role="alert">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    <div class="task-detail__actions">
+
+      <!-- STATUS -->
+      <div class="form-group">
+
+        <label for="status">
+          Statut
+        </label>
+
+        <select
+          id="status"
+          [value]="task.status"
+          (change)="onStatusChange($any($event.target).value)"
+        >
+          <option value="TODO">TODO</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="DONE">DONE</option>
+        </select>
+
+      </div>
+      
+      <div class="form-group">
+
+        <label for="assign">
+          {{ task.assigneeName ? 'Réassigner à' : 'Assigner à' }}
+        </label>
+
+        <div class="task-detail__assign-row">
+
+          <input
+            id="assign"
+            type="email"
+            placeholder="Email du membre"
+            #assignInput
+          >
+
+          <button
+            type="button"
+            class="btn btn--secondary"
+            (click)="onAssign(assignInput.value); assignInput.value = ''"
+          >
+            {{ task.assigneeName ? 'Réassigner' : 'Assigner' }}
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

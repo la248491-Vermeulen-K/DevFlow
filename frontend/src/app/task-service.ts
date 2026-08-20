@@ -31,7 +31,7 @@ export class TaskService {
 
   assignTask(taskId: number, email: string) {
     return this.http.patch<Task>(
-      `http://localhost:8080/api/tasks/${taskId}/assign`,
+      `${this.taskBackendUrl}/${taskId}/assign`,
       { email }
     );
   }

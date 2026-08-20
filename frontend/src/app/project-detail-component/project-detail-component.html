@@ -20,247 +20,290 @@
 
     @default {
 
-      <header class="project-detail__header">
-        <div>
-          <span class="project-detail__eyebrow">PROJECT</span>
-          <h1>Project members</h1>
-          <p>Liste des membres et des tâches associées à ce projet.</p>
-        </div>
+      @if (selectedTask()) {
 
-        <div class="project-detail__actions">
-          <button type="button" class="btn btn--secondary" (click)="backButton()">
-            Retour
-          </button>
-        </div>
-      </header>
+        <app-task-detail-component
+          [task]="selectedTask()!"
+          (close)="closeTask()"
+          (updated)="onTaskUpdated($event)"
+          (deleted)="onTaskDeleted($event)"
+        />
 
-      @if (errorMessage()) {
-        <div class="alert alert--error">
-          <span class="alert__icon">!</span>
-          <span>{{ errorMessage() }}</span>
-        </div>
-      }
+      } @else {
 
-      <section class="members-section">
-
-        <div class="members-section__header">
+        <header class="project-detail__header">
           <div>
-            <h2>Membres</h2>
-            <p>
-              {{ projectMembersList().length || 0 }}
-              membre{{ (projectMembersList().length || 0) > 1 ? 's' : '' }}
-            </p>
+            <span class="project-detail__eyebrow">PROJECT</span>
+            <h1>Project members</h1>
+            <p>Manage members and tasks associated with this project.</p>
           </div>
 
-          <button type="button" class="btn btn--primary" (click)="addMemberButton()">
-            + Ajouter un membre
-          </button>
-        </div>
+          <div class="project-detail__actions">
+            <button
+              type="button"
+              class="btn btn--secondary"
+              (click)="backButton()"
+            >
+              Back
+            </button>
+          </div>
+        </header>
 
-        @if (projectMembersList().length) {
+        @if (errorMessage()) {
+          <div class="alert alert--error">
+            <span class="alert__icon">!</span>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
 
-          <div class="members-table">
+        <section class="members-section">
 
-            <div class="members-table__header">
-              <span>Membre</span>
-              <span>Email</span>
-              <span>Rôle</span>
-              <span>Rejoint le</span>
-              <span></span>
+          <div class="members-section__header">
+            <div>
+              <h2>Members</h2>
+              <p>
+                {{ projectMembersList().length || 0 }}
+                member{{ (projectMembersList().length || 0) > 1 ? 's' : '' }}
+              </p>
             </div>
 
-            @for (member of projectMembersList(); track member.id) {
+            <button
+              type="button"
+              class="btn btn--primary"
+              (click)="addMemberButton()"
+            >
+              + Add member
+            </button>
+          </div>
 
-              <article class="member-row">
+          @if (projectMembersList().length) {
 
-                <div class="member-row__user">
-                  <div class="member-avatar">
-                    <img
-                      [src]="member?.avatarUrl ? backendUrl + member?.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
-                      [alt]="'Photo de profil de ' + member.name"
-                    >
+            <div class="members-table">
+
+              <div class="members-table__header">
+                <span>Member</span>
+                <span>Email</span>
+                <span>Role</span>
+                <span>Joined</span>
+                <span></span>
+              </div>
+
+              @for (member of projectMembersList(); track member.id) {
+
+                <article class="member-row">
+
+                  <div class="member-row__user">
+                    <div class="member-avatar">
+                      <img
+                        [src]="
+                          member?.avatarUrl
+                            ? backendUrl + member?.avatarUrl
+                            : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='
+                        "
+                        [alt]="'Profile picture of ' + member.name"
+                      >
+                    </div>
+
+                    <div>
+                      <h3>{{ member.name }}</h3>
+                      <span>#{{ member.id }}</span>
+                    </div>
+                  </div>
+
+                  <div class="member-row__email">
+                    {{ member.email }}
                   </div>
 
                   <div>
-                    <h3>{{ member.name }}</h3>
-                    <span>#{{ member.id }}</span>
-                  </div>
-                </div>
-
-                <div class="member-row__email">
-                  {{ member.email }}
-                </div>
-
-                <div>
-                  <span
-                    class="badge"
-                    [class.badge--accent]="member.role === 'OWNER'"
-                    [class.badge--danger]="member.role === 'ADMIN'"
-                    [class.badge--success]="member.role === 'MEMBER'"
-                  >
-                    {{ member.role }}
-                  </span>
-                </div>
-
-                <div class="member-row__date">
-                  {{ member.joinedAt | date:'dd/MM/yyyy' }}
-                </div>
-
-                <div class="member-row__actions">
-                  <button
-                    type="button"
-                    class="btn--danger-outline"
-                    [disabled]="member.role === 'OWNER'"
-                    (click)="deleteProjectMember(member.id)"
-                  >
-                    Retirer
-                  </button>
-                </div>
-
-              </article>
-
-            }
-
-          </div>
-
-        } @else {
-
-          <div class="empty-state">
-            <div class="empty-state__icon">👥</div>
-            <h3>Aucun membre</h3>
-            <p>Aucun membre n'est actuellement associé à ce projet.</p>
-            <button type="button" class="btn btn--primary" (click)="addMemberButton()">
-              + Ajouter un membre
-            </button>
-          </div>
-
-        }
-
-      </section>
-
-      <section class="tasks-section">
-
-        <div class="members-section__header">
-          <div>
-            <h2>Tâches</h2>
-            <p>
-              {{ tasksList().length || 0 }}
-              tâche{{ (tasksList().length || 0) > 1 ? 's' : '' }}
-            </p>
-          </div>
-
-          <button type="button" class="btn btn--primary" (click)="addTaskButton()">
-            + Nouvelle tâche
-          </button>
-        </div>
-
-        @if (tasksList().length) {
-
-          <div class="tasks-grid">
-
-            @for (task of tasksList(); track task.id) {
-
-              <article
-                class="task-card"
-                [class.task-card--status-todo]="task.status === 'TODO'"
-                [class.task-card--status-in-progress]="task.status === 'IN_PROGRESS'"
-                [class.task-card--status-done]="task.status === 'DONE'"
-                [class.task-card--priority-low]="task.priority === 'LOW'"
-                [class.task-card--priority-medium]="task.priority === 'MEDIUM'"
-                [class.task-card--priority-high]="task.priority === 'HIGH'"
-              >
-
-                <div class="task-card__top">
-                  <h3>{{ task.title }}</h3>
-
-                  <div class="task-card__top-actions">
-                    <select
-                      class="task-status-select"
-                      [value]="task.status"
-                      (change)="onStatusChange(task.id, $any($event.target).value)"
+                    <span
+                      class="badge"
+                      [class.badge--accent]="member.role === 'OWNER'"
+                      [class.badge--danger]="member.role === 'ADMIN'"
+                      [class.badge--success]="member.role === 'MEMBER'"
                     >
-                      <option value="TODO">TODO</option>
-                      <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="DONE">DONE</option>
-                    </select>
+                      {{ member.role }}
+                    </span>
+                  </div>
 
+                  <div class="member-row__date">
+                    {{ member.joinedAt | date:'dd/MM/yyyy' }}
+                  </div>
+
+                  <div class="member-row__actions">
                     <button
                       type="button"
-                      class="task-delete-btn"
-                      aria-label="Supprimer la tâche"
-                      (click)="deleteTask(task.id)"
+                      class="btn--danger-outline"
+                      [disabled]="member.role === 'OWNER'"
+                      (click)="deleteProjectMember(member.id)"
                     >
-                      🗑
+                      Remove
                     </button>
                   </div>
-                </div>
-                
 
-                @if (task.description) {
-                  <p class="task-card__description">{{ task.description }}</p>
-                }
+                </article>
 
-                @if (task.labels.length) {
-                  <div class="task-card__labels">
-                    @for (label of task.labels; track label.id) {
-                      <span class="label-pill" [style.background]="label.color">
-                        {{ label.name }}
-                      </span>
-                    }
-                  </div>
-                }
+              }
 
-                <div class="task-card__footer">
-                  <span
-                    class="badge"
-                    [class.badge--success]="task.priority === 'LOW'"
-                    [class.badge--warning]="task.priority === 'MEDIUM'"
-                    [class.badge--danger]="task.priority === 'HIGH'"
-                  >
-                    {{ task.priority }}
-                  </span>
+            </div>
 
-                  <span class="task-card__assignee">
-                    {{ task.assigneeName ?? 'Non assigné' }}
-                  </span>
-                </div>
+          } @else {
 
-                <div class="task-card__assign">
-                  <input
-                    type="email"
-                    class="task-assign-input"
-                    [placeholder]="task.assigneeName ? 'réassigner à...' : 'email du membre à assigner'"
-                    #assignInput
-                  >
-                  <button
-                    type="button"
-                    class="btn--danger-outline"
-                    (click)="onAssign(task.id, assignInput.value); assignInput.value = ''"
-                  >
-                    {{ task.assigneeName ? 'Réassigner' : 'Assigner' }}
-                  </button>
-                </div>
+            <div class="empty-state">
+              <div class="empty-state__icon">👥</div>
+              <h3>No members</h3>
+              <p>No members are currently associated with this project.</p>
 
-              </article>
+              <button
+                type="button"
+                class="btn btn--primary"
+                (click)="addMemberButton()"
+              >
+                + Add member
+              </button>
+            </div>
 
-            }
+          }
 
-          </div>
+        </section>
 
-        } @else {
+        <section class="tasks-section">
 
-          <div class="empty-state">
-            <div class="empty-state__icon">📋</div>
-            <h3>Aucune tâche</h3>
-            <p>Ce projet n'a pas encore de tâche.</p>
-            <button type="button" class="btn btn--primary" (click)="addTaskButton()">
-              + Nouvelle tâche
+          <div class="members-section__header">
+            <div>
+              <h2>Tasks</h2>
+              <p>
+                {{ tasksList().length }}
+                task{{ tasksList().length > 1 ? 's' : '' }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn--primary"
+              (click)="addTaskButton()"
+            >
+              + New task
             </button>
           </div>
 
-        }
+          @if (tasksList().length) {
 
-      </section>
+            <div class="tasks-grid">
+
+              @for (task of tasksList(); track task.id) {
+
+                <article
+                  class="task-card"
+                  [class.task-card--status-todo]="task.status === 'TODO'"
+                  [class.task-card--status-in-progress]="task.status === 'IN_PROGRESS'"
+                  [class.task-card--status-done]="task.status === 'DONE'"
+                  (click)="openTask(task)"
+                >
+
+                  <div class="task-card__top">
+                    <h3>{{ task.title }}</h3>
+                  </div>
+
+                  <div class="task-card__meta">
+
+                    <span
+                      class="badge"
+                      [class.badge--accent]="task.status === 'IN_PROGRESS'"
+                      [class.badge--success]="task.status === 'DONE'"
+                    >
+                      {{
+                        task.status === 'TODO'
+                          ? 'To do'
+                          : task.status === 'IN_PROGRESS'
+                            ? 'In progress'
+                            : 'Done'
+                      }}
+                    </span>
+
+                    <span
+                      class="badge"
+                      [class.badge--success]="task.priority === 'LOW'"
+                      [class.badge--warning]="task.priority === 'MEDIUM'"
+                      [class.badge--danger]="task.priority === 'HIGH'"
+                    >
+                      {{
+                        task.priority === 'LOW'
+                          ? 'Low'
+                          : task.priority === 'MEDIUM'
+                            ? 'Medium'
+                            : 'High'
+                      }}
+                    </span>
+
+                    @if (task.deadline) {
+                      <span
+                        class="task-card__deadline"
+                        [class.task-card__deadline--overdue]="isOverdue(task)"
+                      >
+                        {{ task.deadline | date:'dd/MM' }}
+                      </span>
+                    }
+
+                  </div>
+
+                  @if (task.description) {
+                    <p class="task-card__description">
+                      {{ task.description }}
+                    </p>
+                  }
+
+                  @if (task.labels.length) {
+                    <div class="task-card__labels">
+                      @for (label of task.labels; track label.id) {
+                        <span
+                          class="label-pill"
+                          [style.background]="label.color"
+                        >
+                          {{ label.name }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <div class="task-card__footer">
+
+                    <span class="task-card__assignee">
+                      {{ task.assigneeName ?? 'Unassigned' }}
+                    </span>
+
+                    <span class="task-card__open">
+                      View →
+                    </span>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          } @else {
+
+            <div class="empty-state">
+              <div class="empty-state__icon">📋</div>
+              <h3>No tasks</h3>
+              <p>Start by creating a new task.</p>
+
+              <button
+                type="button"
+                class="btn btn--primary"
+                (click)="addTaskButton()"
+              >
+                + Create task
+              </button>
+            </div>
+
+          }
+
+        </section>
+
+      }
 
     }
 

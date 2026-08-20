@@ -7,10 +7,11 @@ import { AddMemberFormComponent } from "../add-member-form-component/add-member-
 import { TaskService } from '../task-service';
 import { Task } from '../models/task-reponse';
 import { TaskFormComponent } from '../task-form-component/task-form-component';
+import { TaskDetailComponent } from "../task-detail-component/task-detail-component";
 
 @Component({
   selector: 'app-project-detail-component',
-  imports: [DatePipe, AddMemberFormComponent, TaskFormComponent],
+  imports: [DatePipe, AddMemberFormComponent, TaskFormComponent, TaskDetailComponent],
   templateUrl: './project-detail-component.html',
   styleUrl: './project-detail-component.scss',
 })
@@ -20,6 +21,7 @@ export class ProjectDetailComponent implements OnInit{
   backendUrl = "http://localhost:8080"
   viewMode = signal<'list' | 'addMember' | 'addTask'>('list');
   projectIdFromRoute!: number
+  selectedTask = signal<Task | null>(null);
 
   errorMessage = signal<string | null>(null);
   
@@ -88,6 +90,18 @@ export class ProjectDetailComponent implements OnInit{
     this.viewMode.set('list');
   }
 
+  onTaskUpdated(updatedTask: Task): void {
+    this.tasksList.update(tasks => tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
+  }
+
+  onTaskDeleted(taskId: number): void {
+    this.tasksList.update(tasks => tasks.filter(t => t.id !== taskId));
+  }
+
+  isOverdue(task: Task): boolean {
+  return !!task.deadline && new Date(task.deadline) < new Date() && task.status !== 'DONE';
+}
+
   onStatusChange(taskId: number, newStatus: string): void {
     this.taskService.updateStatus(taskId, newStatus).subscribe({
       next: (updatedTask: Task) => {
@@ -154,6 +168,15 @@ export class ProjectDetailComponent implements OnInit{
       }
     });
   }
+
+
+    openTask(task: Task): void {
+      this.selectedTask.set(task);
+    }
+
+    closeTask(): void {
+      this.selectedTask.set(null);
+    }
 
   showProfile(id: number){
     //add backend endpoint first 
