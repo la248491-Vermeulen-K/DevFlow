@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TaskDetailComponent } from './task-detail-component';
+import { Task } from '../models/task-reponse';
 
 describe('TaskDetailComponent', () => {
   let component: TaskDetailComponent;
@@ -13,10 +14,24 @@ describe('TaskDetailComponent', () => {
 
     fixture = TestBed.createComponent(TaskDetailComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.componentRef.setInput('task', {
+      id: 1,
+      title: 'Prepare sprint planning',
+      description: null,
+      status: 'TODO',
+      createdAt: '2026-08-20T10:00:00',
+      assigneeId: null,
+      assigneeName: null,
+      deadline: null,
+      priority: 'MEDIUM',
+      labels: [],
+    } satisfies Task);
+    fixture.componentRef.setInput('projectMembers', []);
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.title).toBe('Prepare sprint planning');
   });
 });

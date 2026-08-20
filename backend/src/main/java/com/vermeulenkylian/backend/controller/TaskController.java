@@ -1,9 +1,6 @@
 package com.vermeulenkylian.backend.controller;
 
-import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
-import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
-import com.vermeulenkylian.backend.DTO.TaskResponseDto;
-import com.vermeulenkylian.backend.DTO.UpdateTaskStatusRequestDto;
+import com.vermeulenkylian.backend.DTO.*;
 import com.vermeulenkylian.backend.model.Task;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.service.LabelService;
@@ -24,9 +21,9 @@ public class TaskController {
         this.labelService = labelService;
     }
 
-    @PatchMapping("/{id}/status")
-    public TaskResponseDto updateTaskStatus(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody UpdateTaskStatusRequestDto dto) {
-        return taskService.updateStatus(user, id, dto.getNewStatus());
+    @PatchMapping("/{taskId}")
+    public TaskResponseDto updateTaskStatus(@AuthenticationPrincipal User user, @PathVariable Long taskId, @RequestBody UpdateTaskRequestDto dto) {
+        return taskService.updateTask(user, taskId, dto);
     }
 
     @PatchMapping("/{id}/assign")

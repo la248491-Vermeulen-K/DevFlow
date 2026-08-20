@@ -3,6 +3,7 @@ package com.vermeulenkylian.backend.service;
 import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
+import com.vermeulenkylian.backend.DTO.UpdateTaskRequestDto;
 import com.vermeulenkylian.backend.exception.*;
 import com.vermeulenkylian.backend.mapper.TaskMapper;
 import com.vermeulenkylian.backend.model.Label;
@@ -65,16 +66,6 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public TaskResponseDto updateStatus(User user, Long taskId, TaskStatus newStatus){
-        Task task = taskRepository.findById(taskId).orElseThrow(()->new NotFoundException("Task not found"));
-        if(!permissionService.isMember(user.getId(),task.getProject().getId())){
-            throw new ForbiddenException("You are not a member of the project");
-        }
-        task.setStatus(newStatus);
-        taskRepository.save(task);
-        return toDto(task);
-    }
-
     public TaskResponseDto assignTask(User user, Long taskId, AssignTaskRequestDto dto){
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
 
@@ -100,5 +91,32 @@ public class TaskService {
         }
         taskRepository.delete(task);
         return true;
+    }
+
+    public TaskResponseDto updateTask(User user, Long taskId, UpdateTaskRequestDto dto) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found"));
+
+        if (!permissionService.isMember(user.getId(), task.getProject().getId())) {
+            throw new ForbiddenException("You are not a member of the project");
+        }
+
+        User userToAssign = null;
+
+        if (dto.getAssigneeEmail() != null && !dto.getAssigneeEmail().isBlank()) {
+            userToAssign = userRepository.findByEmail(dto.getAssigneeEmail())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+        }
+
+        task.setTitle(dto.getTitle());
+        task.setDescription(dto.getDescription());
+        task.setPriority(dto.getPriority());
+        task.setDeadline(dto.getDeadline() == null ? null : dto.getDeadline().atStartOfDay());
+        task.setAssignee(userToAssign);
+        task.setStatus(dto.getStatus());
+
+        taskRepository.save(task);
+
+        return toDto(task);
     }
 }

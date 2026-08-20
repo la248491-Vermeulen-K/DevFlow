@@ -91,33 +91,25 @@ export class ProjectDetailComponent implements OnInit{
   }
 
   onTaskUpdated(updatedTask: Task): void {
-    this.tasksList.update(tasks => tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
+    this.tasksList.update(tasks =>
+      tasks.map(task =>
+        task.id === updatedTask.id ? updatedTask : task
+      )
+    );
+
+    this.selectedTask.set(updatedTask);
   }
 
   onTaskDeleted(taskId: number): void {
-    this.tasksList.update(tasks => tasks.filter(t => t.id !== taskId));
+    this.tasksList.update(tasks =>
+      tasks.filter(task => task.id !== taskId)
+    );
+
+    this.selectedTask.set(null);
   }
 
   isOverdue(task: Task): boolean {
-  return !!task.deadline && new Date(task.deadline) < new Date() && task.status !== 'DONE';
-}
-
-  onStatusChange(taskId: number, newStatus: string): void {
-    this.taskService.updateStatus(taskId, newStatus).subscribe({
-      next: (updatedTask: Task) => {
-        this.tasksList.update(tasks =>
-          tasks.map(task =>
-            task.id === taskId ? updatedTask : task
-          )
-        );
-      },
-      error: (error) => {
-        console.error('Erreur lors de la modification du statut :', error);
-        this.errorMessage.set(
-          'Impossible de modifier le statut de la tâche.'
-        );
-      }
-    });
+    return !!task.deadline && new Date(task.deadline) < new Date() && task.status !== 'DONE';
   }
 
   deleteProjectMember(userId: number): void {

@@ -22,10 +22,25 @@ export class TaskService {
     );
   }
 
-  updateStatus(taskId: number, newStatus: string) {
+  updateTask(
+    taskId: number,
+    title: string,
+    description: string,
+    status: string,
+    deadline: string | null,
+    priority: string,
+    assigneeEmail: string | null
+  ) {
     return this.http.patch<Task>(
-      `http://localhost:8080/api/tasks/${taskId}/status`,
-      { newStatus }
+      `${this.taskBackendUrl}/${taskId}`,
+      {
+        title,
+        description,
+        status,
+        deadline,
+        priority,
+        assigneeEmail
+      }
     );
   }
 

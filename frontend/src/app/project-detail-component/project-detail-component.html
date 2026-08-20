@@ -24,6 +24,7 @@
 
         <app-task-detail-component
           [task]="selectedTask()!"
+          [projectMembers]="projectMembersList()"
           (close)="closeTask()"
           (updated)="onTaskUpdated($event)"
           (deleted)="onTaskDeleted($event)"
