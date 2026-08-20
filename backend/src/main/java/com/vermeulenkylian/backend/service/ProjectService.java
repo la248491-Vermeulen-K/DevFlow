@@ -4,6 +4,8 @@ import com.vermeulenkylian.backend.DTO.CreateProjectRequestDto;
 import com.vermeulenkylian.backend.DTO.ProjectResponseDto;
 import com.vermeulenkylian.backend.DTO.ProjectSummaryDto;
 import com.vermeulenkylian.backend.DTO.UpdateProjectRequestDto;
+import com.vermeulenkylian.backend.exception.ForbiddenException;
+import com.vermeulenkylian.backend.exception.NotFoundException;
 import com.vermeulenkylian.backend.model.Project;
 import com.vermeulenkylian.backend.model.ProjectMember;
 import com.vermeulenkylian.backend.model.User;
@@ -66,9 +68,9 @@ public class ProjectService {
 
     public ProjectResponseDto updateProject(User user, Long projectId, UpdateProjectRequestDto dto){
         if(!permissionService.isAtLeastAdmin(user.getId(), projectId)){
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("Project not found"));
         project.setName(dto.getName());
         project.setDescription(dto.getDescription());
         projectRepository.save(project);
@@ -78,9 +80,9 @@ public class ProjectService {
     @Transactional
     public boolean deleteProject(User user, Long projectId){
         if(!permissionService.isOwner(user.getId(), projectId)){
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("Project not found"));
         projectMemberRepository.deleteByProjectId(projectId);
         projectRepository.delete(project);
         return true;

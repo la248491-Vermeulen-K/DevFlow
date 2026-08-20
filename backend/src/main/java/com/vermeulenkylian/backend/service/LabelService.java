@@ -3,6 +3,9 @@ package com.vermeulenkylian.backend.service;
 import com.vermeulenkylian.backend.DTO.CreateLabelRequestDto;
 import com.vermeulenkylian.backend.DTO.LabelResponseDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
+import com.vermeulenkylian.backend.exception.BadRequestException;
+import com.vermeulenkylian.backend.exception.ForbiddenException;
+import com.vermeulenkylian.backend.exception.NotFoundException;
 import com.vermeulenkylian.backend.model.Label;
 import com.vermeulenkylian.backend.model.Project;
 import com.vermeulenkylian.backend.model.Task;
@@ -33,9 +36,9 @@ public class LabelService {
 
     public LabelResponseDto createLabel(User user, Long projectId, CreateLabelRequestDto dto){
         if(!permissionService.isAtLeastAdmin(user.getId(), projectId)){
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("Project not found"));
         Label label = new Label();
         label.setName(dto.getName());
         label.setColor(dto.getColor());
@@ -48,7 +51,7 @@ public class LabelService {
         Task task = getTaskAndCheckPermission(user, taskId);
         Label label = getLabelForTask(labelId, task);
         if(task.getLabels().contains(label)){
-            throw new RuntimeException("This label is already attached to the task");
+            throw new BadRequestException("This label is already attached to the task");
         }
         task.getLabels().add(label);
         taskRepository.save(task);
@@ -59,7 +62,7 @@ public class LabelService {
         Task task = getTaskAndCheckPermission(user, taskId);
         Label label = getLabelForTask(labelId, task);
         if(!task.getLabels().contains(label)){
-            throw new RuntimeException("This label is not attached to the task");
+            throw new BadRequestException("This label is not attached to the task");
         }
         task.getLabels().remove(label);
         taskRepository.save(task);
@@ -67,9 +70,9 @@ public class LabelService {
     }
 
     public boolean deleteLabel(User user, Long labelId){
-        Label label = labelRepository.findById(labelId).orElseThrow(() -> new RuntimeException("Label not found"));
+        Label label = labelRepository.findById(labelId).orElseThrow(() -> new NotFoundException("Label not found"));
         if(!permissionService.isAtLeastAdmin(user.getId(), label.getProject().getId())){
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
         labelRepository.delete(label);
         return true;
@@ -77,20 +80,20 @@ public class LabelService {
 
     private Task getTaskAndCheckPermission(User user, Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new NotFoundException("Task not found"));
 
         if (!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())) {
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
         return task;
     }
 
     private Label getLabelForTask(Long labelId, Task task) {
         Label label = labelRepository.findById(labelId)
-                .orElseThrow(() -> new RuntimeException("Label not found"));
+                .orElseThrow(() -> new NotFoundException("Label not found"));
 
         if (!label.getProject().getId().equals(task.getProject().getId())) {
-            throw new RuntimeException("Label does not belong to the task's project");
+            throw new BadRequestException("Label does not belong to the task's project");
         }
         return label;
     }

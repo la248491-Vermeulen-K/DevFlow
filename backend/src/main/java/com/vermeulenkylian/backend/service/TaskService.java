@@ -3,6 +3,7 @@ package com.vermeulenkylian.backend.service;
 import com.vermeulenkylian.backend.DTO.AssignTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.CreateTaskRequestDto;
 import com.vermeulenkylian.backend.DTO.TaskResponseDto;
+import com.vermeulenkylian.backend.exception.*;
 import com.vermeulenkylian.backend.mapper.TaskMapper;
 import com.vermeulenkylian.backend.model.Label;
 import com.vermeulenkylian.backend.model.Project;
@@ -40,11 +41,11 @@ public class TaskService {
 
     public TaskResponseDto createTask(User creator, Long projectId, CreateTaskRequestDto dto){
         if(!permissionService.isMember(creator.getId(), projectId)){
-            throw new RuntimeException("Your are not a member of the project");
+            throw new ForbiddenException("Your are not a member of the project");
         }
         Task task = new Task();
 
-        Project project = projectRepository.findById(projectId).orElseThrow(()->new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(projectId).orElseThrow(()->new NotFoundException("Project not found"));
         task.setProject(project);
         task.setDescription(dto.getDescription());
         task.setTitle(dto.getTitle());
@@ -57,7 +58,7 @@ public class TaskService {
 
     public List<TaskResponseDto> getTasks(User user, Long projectId){
         if(!permissionService.isMember(user.getId(), projectId)){
-            throw new RuntimeException("You are not a member of this project");
+            throw new ForbiddenException("You are not a member of this project");
         }
         return taskRepository.findByProjectId(projectId).stream()
                 .map(TaskMapper::toDto)
@@ -65,9 +66,9 @@ public class TaskService {
     }
 
     public TaskResponseDto updateStatus(User user, Long taskId, TaskStatus newStatus){
-        Task task = taskRepository.findById(taskId).orElseThrow(()->new RuntimeException("Task not found"));
+        Task task = taskRepository.findById(taskId).orElseThrow(()->new NotFoundException("Task not found"));
         if(!permissionService.isMember(user.getId(),task.getProject().getId())){
-            throw new RuntimeException("You are not a member of the project");
+            throw new ForbiddenException("You are not a member of the project");
         }
         task.setStatus(newStatus);
         taskRepository.save(task);
@@ -75,16 +76,16 @@ public class TaskService {
     }
 
     public TaskResponseDto assignTask(User user, Long taskId, AssignTaskRequestDto dto){
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
 
         if(!permissionService.isMember(user.getId(), task.getProject().getId())){
-            throw new RuntimeException("You are not a member of the project");
+            throw new ForbiddenException("You are not a member of the project");
         }
 
-        User assignee = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User assignee = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NotFoundException("User not found"));
 
         if(!permissionService.isMember(assignee.getId(), task.getProject().getId())){
-            throw new RuntimeException("This user is not a member of the project and cannot be assigned");
+            throw new BadRequestException("This user is not a member of the project and cannot be assigned");
         }
 
         task.setAssignee(assignee);
@@ -93,9 +94,9 @@ public class TaskService {
     }
 
     public boolean deleteTask(User user,Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
         if (!permissionService.isAtLeastAdmin(user.getId(), task.getProject().getId())){
-            throw new RuntimeException("You don't have the permission to do that");
+            throw new ForbiddenException("You don't have the permission to do that");
         }
         taskRepository.delete(task);
         return true;

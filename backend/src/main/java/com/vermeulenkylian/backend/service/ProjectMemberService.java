@@ -2,6 +2,9 @@ package com.vermeulenkylian.backend.service;
 
 import com.vermeulenkylian.backend.DTO.AddMemberRequestDto;
 import com.vermeulenkylian.backend.DTO.ProjectMemberResponseDto;
+import com.vermeulenkylian.backend.exception.BadRequestException;
+import com.vermeulenkylian.backend.exception.ForbiddenException;
+import com.vermeulenkylian.backend.exception.NotFoundException;
 import com.vermeulenkylian.backend.model.ProjectMember;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.model.enums.ProjectRole;
@@ -32,15 +35,15 @@ public class ProjectMemberService {
 
     public ProjectMemberResponseDto addMember(User requester, Long projectId, AddMemberRequestDto dto){
         if (!permissionService.isAtLeastAdmin(requester.getId(), projectId)){
-            throw new RuntimeException("You don't have permission to add member");
+            throw new ForbiddenException("You don't have permission to add member");
         }
-        User newMember = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("Member not found"));
+        User newMember = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NotFoundException("Member not found"));
         if (projectMemberRepository.findByUserIdAndProjectId(newMember.getId(), projectId).isPresent()){
-            throw new RuntimeException("Member already exists");
+            throw new BadRequestException("Member already exists");
         }
         ProjectMember member = new ProjectMember();
         member.setUser(newMember);
-        member.setProject(projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found")));
+        member.setProject(projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("Project not found")));
         member.setRole(dto.getProjectRole());
         member.setJoinedAt(LocalDateTime.now());
         projectMemberRepository.save(member);
@@ -57,13 +60,13 @@ public class ProjectMemberService {
 
     public boolean removeMember(User requester, Long projectId, Long userIdToRemove) {
         if (!permissionService.isAtLeastAdmin(requester.getId(), projectId)) {
-            throw new RuntimeException("You don't have permission to remove member");
+            throw new ForbiddenException("You don't have permission to remove member");
         }
         ProjectMember projectMember = projectMemberRepository.findByUserIdAndProjectId(userIdToRemove, projectId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new NotFoundException("Member not found"));
 
         if (projectMember.getRole() == ProjectRole.OWNER) {
-            throw new RuntimeException("Cannot remove the project owner");
+            throw new BadRequestException("Cannot remove the project owner");
         }
 
         projectMemberRepository.delete(projectMember);
@@ -72,10 +75,10 @@ public class ProjectMemberService {
 
     public List<ProjectMemberResponseDto> getProjectMembers(User requester, Long projectId) {
         if(projectRepository.findById(projectId).isEmpty()){
-            throw new RuntimeException("Project not found");
+            throw new NotFoundException("Project not found");
         }
         if (!permissionService.isMember(requester.getId(), projectId)) {
-            throw new RuntimeException("You are not a member of this project");
+            throw new ForbiddenException("You are not a member of this project");
         }
         return projectMemberRepository.findByProjectId(projectId).stream()
                 .map(member -> new ProjectMemberResponseDto(

@@ -1,6 +1,7 @@
 package com.vermeulenkylian.backend.service;
 
 import com.vermeulenkylian.backend.DTO.UserProfileDto;
+import com.vermeulenkylian.backend.exception.BadRequestException;
 import com.vermeulenkylian.backend.model.User;
 import com.vermeulenkylian.backend.repository.UserRepository;
 import org.apache.tika.Tika;
@@ -36,16 +37,16 @@ public class AvatarService {
             throw new RuntimeException(e);
         }
         if (!Set.of("image/jpeg", "image/png", "image/webp").contains(detectedType)) {
-            throw new IllegalArgumentException("Invalid image type.");
+            throw new BadRequestException("Invalid image type.");
         }
         if(file.getSize() <= 0 || file.getSize() > 2 * 1024 * 1024) {
-            throw new IllegalArgumentException("Invalid file size. File is empty or too large.");
+            throw new BadRequestException("Invalid file size. File is empty or too large.");
         }
         String extension = switch (detectedType) {
             case "image/jpeg" -> ".jpg";
             case "image/png" -> ".png";
             case "image/webp" -> ".webp";
-            default -> throw new IllegalArgumentException("Format non supporté");
+            default -> throw new BadRequestException("Format is not supported");
         };
 
         Path uploadPath = Path.of(uploadDir);
