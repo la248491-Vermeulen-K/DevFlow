@@ -6,6 +6,7 @@ import { TaskService } from '../task-service';
 import { ProjectMemberResponse } from '../models/project-member-response';
 import { Label } from '../models/label-response';
 import { LabelService } from '../label-service';
+import { NotificationService } from '../notification-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -48,6 +49,7 @@ export class TaskDetailComponent implements OnChanges {
   constructor(
     private taskService: TaskService,
     private labelService: LabelService,
+    private notifications: NotificationService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -129,6 +131,7 @@ export class TaskDetailComponent implements OnChanges {
         this.task = updatedTask;
         this.loadTask();
         this.successMessage.set('Changes saved.');
+        this.notifications.success('Tâche sauvegardée.');
         this.updated.emit(updatedTask);
         this.close.emit();
       },

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { UserProfileService } from '../user-profile';
 import { UserProfile } from '../models/userProfile-response';
+import { NotificationService } from '../notification-service';
 
 @Component({
   selector: 'app-profile-component',
@@ -18,14 +19,15 @@ export class ProfileComponent implements OnInit {
   profile = signal<UserProfile | null>(null);
 
   private userProfileService = inject(UserProfileService);
+  private notifications = inject(NotificationService);
 
   ngOnInit(): void {
     this.userProfileService.getProfile().subscribe({
       next: (data) => {
         this.profile.set(data);
       },
-      error: (error) => {
-        console.error('Erreur lors de la récupération du profil', error);
+      error: () => {
+        this.notifications.error('Impossible de charger votre profil.');
       }
     });
   }
@@ -43,9 +45,9 @@ export class ProfileComponent implements OnInit {
   next: (updatedProfile) => {
     this.profile.set(updatedProfile);
   },
-  error: (error) => {
+  error: () => {
     this.errorMessage = 'Erreur lors de l\'upload de l\'avatar'
-    console.error('Erreur lors de l\'upload de l\'avatar', error);
+    this.notifications.error('Impossible de mettre à jour votre avatar.');
   }
 });
 }

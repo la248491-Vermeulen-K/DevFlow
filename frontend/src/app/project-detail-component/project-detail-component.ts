@@ -11,6 +11,7 @@ import { TaskDetailComponent } from "../task-detail-component/task-detail-compon
 import { ProjectResponse } from '../models/project-response';
 import { Label } from '../models/label-response';
 import { LabelService } from '../label-service';
+import { NotificationService } from '../notification-service';
 
 @Component({
   selector: 'app-project-detail-component',
@@ -36,6 +37,7 @@ export class ProjectDetailComponent implements OnInit{
     private router: Router,
     private taskService: TaskService,
     private labelService: LabelService,
+    private notifications: NotificationService,
   ){}
   
 
@@ -51,6 +53,7 @@ export class ProjectDetailComponent implements OnInit{
           this.router.navigate(['/projects']);
         } else {
           this.errorMessage.set('Une erreur est survenue lors du chargement des membres');
+          this.notifications.error('Impossible de charger les membres du projet.');
         }
       }
     })
@@ -63,12 +66,16 @@ export class ProjectDetailComponent implements OnInit{
           this.router.navigate(['/projects']);
         } else {
           this.errorMessage.set('Une erreur est survenue lors du chargement des tâches');
+          this.notifications.error('Impossible de charger les tâches du projet.');
         }
       }
     });
     this.labelService.getLabels(this.projectId).subscribe({
       next: labels => this.labelsList.set(labels),
-      error: () => this.errorMessage.set('Unable to load project labels.'),
+      error: () => {
+        this.errorMessage.set('Unable to load project labels.');
+        this.notifications.error('Impossible de charger les labels du projet.');
+      },
     });
   }
 
@@ -135,11 +142,10 @@ export class ProjectDetailComponent implements OnInit{
         );
       },
       error: (error) => {
-        console.error('Erreur lors de la suppression du membre :', error);
-
         this.errorMessage.set(
           'Impossible de supprimer le membre.'
         );
+        this.notifications.error('Impossible de supprimer le membre.');
       }
     });
   }
@@ -154,10 +160,10 @@ export class ProjectDetailComponent implements OnInit{
         );
       },
       error: (error) => {
-        console.error('Erreur lors de l’assignation de la tâche :', error);
         this.errorMessage.set(
           'Impossible d’assigner la tâche.'
         );
+        this.notifications.error('Impossible d’assigner la tâche.');
       }
     });
   }
@@ -168,8 +174,8 @@ export class ProjectDetailComponent implements OnInit{
         this.tasksList.update(tasks => tasks.filter(task => task.id !== taskId));
       },
       error: (error) => {
-        console.error('Erreur lors de la suppression de la tâche :', error);
         this.errorMessage.set('Impossible de supprimer la tâche.');
+        this.notifications.error('Impossible de supprimer la tâche.');
       }
     });
   }
