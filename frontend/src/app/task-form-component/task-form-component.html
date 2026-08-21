@@ -20,7 +20,7 @@
           id="title"
           type="text"
           formControlName="title"
-          placeholder="Corriger le bug de login"
+          placeholder="Fix the login bug"
           [attr.aria-invalid]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
         >
       </div>
@@ -31,7 +31,7 @@
           id="description"
           type="text"
           formControlName="description"
-          placeholder="Optionnel"
+          placeholder="Optional"
         >
       </div>
 
@@ -46,10 +46,10 @@
 
       <div class="terminal-card__actions">
         <button type="button" class="btn btn--secondary" (click)="onCancel()">
-          Annuler
+          Cancel
         </button>
         <button type="submit" class="btn btn--primary" [disabled]="taskForm.invalid">
-          Créer la tâche
+          Create task
         </button>
       </div>
 

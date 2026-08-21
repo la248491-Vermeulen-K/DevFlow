@@ -5,7 +5,7 @@
       <img
         class="profile-avatar"
         [src]="p.avatarUrl ? backendUrl + p.avatarUrl : 'https://media.istockphoto.com/id/1980276924/fr/vectoriel/pas-d%C3%A9l%C3%A9ment-graphique-de-vignette-photo-aucune-image-trouv%C3%A9e-ou-disponible-dans-la.jpg?s=612x612&w=0&k=20&c=-x8kdaPllGTjKqTlKJJ-Qk9k8zpeHLMM3Tl4ReNBwuE='"
-        [alt]="'Photo de profil de ' + p.name"
+        [alt]="'Profile picture of ' + p.name"
       >
 
       <div class="profile-info">
@@ -15,9 +15,9 @@
     </div>
 
     <div class="profile-section avatar-section">
-      <h2>Photo de profil</h2>
+      <h2>Profile picture</h2>
 
-      <label for="avatar">Changer ma photo de profil</label>
+      <label for="avatar">Change profile picture</label>
 
       <input
         id="avatar"
@@ -34,12 +34,12 @@
     <div class="profile-body">
 
       <div class="profile-section">
-        <h2>À propos</h2>
+        <h2>About</h2>
         <p>{{ p.bio }}</p>
       </div>
 
       <div class="profile-section">
-        <h2>Informations</h2>
+        <h2>Information</h2>
 
         <div class="profile-field">
           <span>ID :</span>
@@ -52,7 +52,7 @@
         </div>
 
         <div class="profile-field">
-          <span>Membre depuis :</span>
+          <span>Member since:</span>
           <span>{{ p.createdAt | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
@@ -61,5 +61,5 @@
 
   </div>
 } @else {
-  <p>Chargement du profil...</p>
+  <p>Loading profile...</p>
 }

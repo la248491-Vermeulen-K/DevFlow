@@ -41,9 +41,9 @@ export class AddMemberFormComponent {
         },
         error: (error) => {
         if (error.status === 401 || error.status === 403) {
-          this.errorMessage.set('Vous n\'avez pas la permission d\'ajouter un membre à ce projet');
+          this.errorMessage.set('You do not have permission to add a member to this project.');
         } else {
-          this.errorMessage.set('Une erreur est survenue lors de l\'ajout du membre');
+          this.errorMessage.set('An error occurred while adding the member.');
         }
       }
       });

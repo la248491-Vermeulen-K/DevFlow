@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
         this.profile.set(data);
       },
       error: () => {
-        this.notifications.error('Impossible de charger votre profil.');
+        this.notifications.error('Unable to load your profile.');
       }
     });
   }
@@ -46,8 +46,8 @@ export class ProfileComponent implements OnInit {
     this.profile.set(updatedProfile);
   },
   error: () => {
-    this.errorMessage = 'Erreur lors de l\'upload de l\'avatar'
-    this.notifications.error('Impossible de mettre à jour votre avatar.');
+    this.errorMessage = 'Unable to upload your profile picture.';
+    this.notifications.error('Unable to update your profile picture.');
   }
 });
 }

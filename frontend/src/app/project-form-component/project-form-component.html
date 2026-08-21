@@ -20,7 +20,7 @@
           id="name"
           type="text"
           formControlName="name"
-          placeholder="mon-super-projet"
+          placeholder="my-awesome-project"
           [attr.aria-invalid]="createProjectForm.get('name')?.invalid && createProjectForm.get('name')?.touched"
         >
       </div>
@@ -31,16 +31,16 @@
           id="description"
           type="text"
           formControlName="description"
-          placeholder="Optionnel"
+          placeholder="Optional"
           [attr.aria-invalid]="createProjectForm.get('description')?.invalid && createProjectForm.get('description')?.touched"
         >
       </div>
 
       <button class="btn btn--primary" type="submit" [disabled]="createProjectForm.invalid">
-        Créer le projet
+        Create project
       </button>
       <button type="button" class="btn btn--secondary" (click)="onCancel()">
-          Annuler
+          Cancel
       </button>
 
       @if (errorMessage()) {

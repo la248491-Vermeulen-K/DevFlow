@@ -33,7 +33,7 @@ public class AuthService {
 
     public UserResponseDto register(RegisterRequestDto dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new BadRequestException("Cet email est déjà utilisé");
+            throw new BadRequestException("This email is already in use");
         }
         String password = passwordEncoder.encode(dto.getPassword());
         User user = new User();
@@ -64,7 +64,7 @@ public class AuthService {
                         new NotFoundException("Refresh token introuvable")
                 );
         if(refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
-            throw new UnauthorizedException("Refresh token expiré");
+            throw new UnauthorizedException("Refresh token has expired");
         }
         User user = refreshToken.getUser();
         return jwtService.generateToken(user);

@@ -107,7 +107,7 @@
   }
 }
 
-// Disposition : On donne plus de largeur à la colonne status
+// Layout: give the status column more width.
 .task-detail__field-row {
   display: grid;
   grid-template-columns: 1.3fr 1fr;

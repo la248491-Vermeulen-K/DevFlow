@@ -52,8 +52,8 @@ export class ProjectDetailComponent implements OnInit{
         if (error.status === 401 || error.status === 403) {
           this.router.navigate(['/projects']);
         } else {
-          this.errorMessage.set('Une erreur est survenue lors du chargement des membres');
-          this.notifications.error('Impossible de charger les membres du projet.');
+          this.errorMessage.set('An error occurred while loading project members.');
+          this.notifications.error('Unable to load project members.');
         }
       }
     })
@@ -65,8 +65,8 @@ export class ProjectDetailComponent implements OnInit{
         if (error.status === 401 || error.status === 403) {
           this.router.navigate(['/projects']);
         } else {
-          this.errorMessage.set('Une erreur est survenue lors du chargement des tâches');
-          this.notifications.error('Impossible de charger les tâches du projet.');
+          this.errorMessage.set('An error occurred while loading project tasks.');
+          this.notifications.error('Unable to load project tasks.');
         }
       }
     });
@@ -74,7 +74,7 @@ export class ProjectDetailComponent implements OnInit{
       next: labels => this.labelsList.set(labels),
       error: () => {
         this.errorMessage.set('Unable to load project labels.');
-        this.notifications.error('Impossible de charger les labels du projet.');
+        this.notifications.error('Unable to load project labels.');
       },
     });
   }
@@ -143,9 +143,9 @@ export class ProjectDetailComponent implements OnInit{
       },
       error: (error) => {
         this.errorMessage.set(
-          'Impossible de supprimer le membre.'
+          'Unable to remove the member.'
         );
-        this.notifications.error('Impossible de supprimer le membre.');
+        this.notifications.error('Unable to remove the member.');
       }
     });
   }
@@ -161,9 +161,9 @@ export class ProjectDetailComponent implements OnInit{
       },
       error: (error) => {
         this.errorMessage.set(
-          'Impossible d’assigner la tâche.'
+          'Unable to assign the task.'
         );
-        this.notifications.error('Impossible d’assigner la tâche.');
+        this.notifications.error('Unable to assign the task.');
       }
     });
   }
@@ -174,8 +174,8 @@ export class ProjectDetailComponent implements OnInit{
         this.tasksList.update(tasks => tasks.filter(task => task.id !== taskId));
       },
       error: (error) => {
-        this.errorMessage.set('Impossible de supprimer la tâche.');
-        this.notifications.error('Impossible de supprimer la tâche.');
+        this.errorMessage.set('Unable to delete the task.');
+        this.notifications.error('Unable to delete the task.');
       }
     });
   }

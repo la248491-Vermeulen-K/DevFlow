@@ -131,7 +131,7 @@ export class TaskDetailComponent implements OnChanges {
         this.task = updatedTask;
         this.loadTask();
         this.successMessage.set('Changes saved.');
-        this.notifications.success('Tâche sauvegardée.');
+        this.notifications.success('Task saved.');
         this.updated.emit(updatedTask);
         this.close.emit();
       },

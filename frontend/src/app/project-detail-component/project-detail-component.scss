@@ -1,6 +1,5 @@
-// .btn, .alert*, .form-error viennent de styles.scss global — pas redéfinis ici.
-// Utilise .badge / .badge--accent / .badge--success (global) pour les rôles
-// plutôt que .role-badge local — voir HTML à ajuster en conséquence.
+// .btn, .alert*, and .form-error come from global styles.scss and are not redefined here.
+// Use the global .badge variants for roles rather than a local .role-badge.
 
 :host {
   display: block;
@@ -81,7 +80,7 @@
   backdrop-filter: blur(8px);
 }
 
-// 5 colonnes : membre / email / rôle / date / action
+// Five columns: member / email / role / date / action
 .members-table__header,
 .member-row {
   display: grid;
@@ -286,7 +285,7 @@
   padding: var(--space-md);
   padding-top: calc(var(--space-md) + 4px);
 
-  // bande de statut en haut de la carte ("bordereau")
+  // Status strip at the top of the card
   &::before {
     content: '';
     position: absolute;
@@ -294,7 +293,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--color-text-muted); // TODO par défaut
+    background: var(--color-text-muted); // Default TODO state
   }
 
   &--status-todo::before { background: var(--color-text-muted); }

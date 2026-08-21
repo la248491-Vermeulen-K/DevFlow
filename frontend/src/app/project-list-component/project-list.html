@@ -11,7 +11,7 @@
   <div class="project-page__header">
     <div>
       <h1>Projects</h1>
-      <p>Gérez et consultez vos projets.</p>
+      <p>Manage and view your projects.</p>
     </div>
 
     <button
@@ -20,7 +20,7 @@
       (click)="createProject()"
     >
       <span>+</span>
-      Nouveau projet
+      New project
     </button>
   </div>
 
@@ -32,18 +32,18 @@
           <h2>{{ project.name }}</h2>
 
           <p class="project-card__description">
-            {{ project.description || 'Aucune description' }}
+            {{ project.description || 'No description' }}
           </p>
         </div>
 
         <p class="project-card__meta">
-          Créé le {{ project.createdAt | date:'dd/MM/yyyy' }}
+          Created on {{ project.createdAt | date:'dd/MM/yyyy' }}
         </p>
       </article>
     } @empty {
       <div class="project-empty">
-        <h2>Aucun projet</h2>
-        <p>Commencez par créer votre premier projet.</p>
+        <h2>No projects</h2>
+        <p>Start by creating your first project.</p>
 
         <button
           type="button"
@@ -51,7 +51,7 @@
           (click)="createProject()"
         >
           <span>+</span>
-          Créer un projet
+          Create project
         </button>
       </div>
     }

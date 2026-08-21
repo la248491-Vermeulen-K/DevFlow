@@ -31,7 +31,7 @@ export class ProjectFormComponent {
         this.router.navigate(['/projects']);
       },
       error: () => {
-        this.errorMessage.set('Nom ou description invalide');
+        this.errorMessage.set('Invalid name or description.');
       }
     })
   }

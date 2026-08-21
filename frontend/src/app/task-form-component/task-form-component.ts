@@ -41,9 +41,9 @@ export class TaskFormComponent {
       },
       error: (error) => {
         if (error.status === 401 || error.status === 403) {
-          this.errorMessage.set('Vous n\'avez pas la permission de créer une tâche sur ce projet');
+          this.errorMessage.set('You do not have permission to create a task in this project.');
         } else {
-          this.errorMessage.set('Une erreur est survenue lors de la création de la tâche');
+          this.errorMessage.set('An error occurred while creating the task.');
         }
       },
     });

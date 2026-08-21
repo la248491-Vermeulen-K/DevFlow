@@ -1,6 +1,6 @@
-// Formulaire d'ajout de membre : intégré dans ProjectDetailComponent
-// (pas une page à part entière) — pas de min-height plein écran.
-// Ajoute la classe "auth-page--embedded" en plus de "auth-page" dans le HTML :
+// Add-member form embedded in ProjectDetailComponent.
+// It is not a standalone page, so it does not need a full-screen min-height.
+// Add the "auth-page--embedded" class alongside "auth-page" in the HTML.
 // <div class="auth-page auth-page--embedded">
 
 :host {

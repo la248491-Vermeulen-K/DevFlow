@@ -1,11 +1,10 @@
 // ============================================================
 // src/styles.scss — fichier global UNIQUE
-// Contient : tokens de design, reset, typographie, et tous les
-// composants partagés entre pages (terminal-card, boutons, formulaires,
-// alertes, badges). Les fichiers .scss de composants ne doivent PLUS
-// redéfinir ces classes — seulement leur mise en page spécifique.
+// Contains design tokens, reset styles, typography, and shared components
+// (terminal-card, buttons, forms, alerts, badges). Component SCSS files must
+// not redefine these classes; they should only define their specific layout.
 //
-// Police à ajouter dans le <head> de src/index.html :
+// Font to add to the <head> of src/index.html:
 // <link rel="preconnect" href="https://fonts.googleapis.com">
 // <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 // <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -32,7 +31,7 @@
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  // Échelle d'espacement
+  // Spacing scale
   --space-xs: 0.375rem;
   --space-sm: 0.75rem;
   --space-md: 1.25rem;
@@ -112,8 +111,8 @@ a.link {
 }
 
 // ============================================================
-// Layout partagé — pages centrées type "terminal"
-// (login, formulaires, formulaires intégrés)
+// Shared layout — centered terminal-style pages
+// (login and embedded forms)
 // ============================================================
 
 .auth-page {
@@ -129,8 +128,8 @@ a.link {
     var(--color-bg);
 }
 
-// variante utilisée quand le formulaire est intégré dans une autre page
-// (pas de min-height plein écran, pas de radial-gradient dupliqué)
+// Variant used when a form is embedded in another page
+// (no full-screen min-height or duplicated radial gradient)
 .auth-page--embedded {
   min-height: 0;
   background: none;
@@ -139,7 +138,7 @@ a.link {
 }
 
 // ============================================================
-// Terminal card — le composant signature de l'app
+// Terminal card — the app's signature component
 // ============================================================
 
 .terminal-card {
@@ -429,18 +428,15 @@ a.link {
   }
 }
 
-// Bouton de soumission seul, en pleine largeur, avec un espacement au-dessus
-// du dernier champ — uniquement quand il est enfant direct du corps d'une
-// terminal-card (login, formulaire de projet). Dans une rangée d'actions
-// (.terminal-card__actions ou toute autre barre de boutons), il garde sa
-// taille naturelle, comme n'importe quel autre bouton.
+// Full-width standalone submit button with spacing above the last field —
+// only when it is a direct child of a terminal-card body. In an action row,
+// it keeps its natural size like any other button.
 .terminal-card__body > .btn--primary {
   width: 100%;
   margin-top: var(--space-md);
 }
 
-// Espace entre deux boutons empilés à la suite (ex : "Créer" puis "Annuler"
-// en dessous, sans passer par .terminal-card__actions)
+// Space between two stacked buttons (for example, Create then Cancel)
 .terminal-card__body > .btn + .btn {
   margin-top: var(--space-sm);
 }
@@ -457,8 +453,8 @@ a.link {
   }
 }
 
-// bouton compact pour actions destructives ponctuelles dans une liste
-// (retirer un membre, supprimer une tâche, etc.)
+// Compact button for occasional destructive actions in a list
+// (remove a member, delete a task, etc.)
 .btn--danger-outline {
   height: 30px;
   padding: 0 0.7rem;
@@ -486,7 +482,7 @@ a.link {
 }
 
 // ============================================================
-// Messages d'état (erreur inline / alerte)
+// Status messages (inline error / alert)
 // ============================================================
 
 .form-error {
@@ -555,7 +551,7 @@ a.link {
 }
 
 // ============================================================
-// Badges (rôles, statuts — réutilisable dans tout le projet)
+// Badges (roles and statuses — reusable throughout the project)
 // ============================================================
 
 .badge {
