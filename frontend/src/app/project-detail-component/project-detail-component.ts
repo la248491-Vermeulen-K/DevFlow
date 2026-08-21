@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
 import { ProjectMemberResponse } from '../models/project-member-response';
 import { ProjectMemberService } from '../project-member-service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,9 @@ import { TaskService } from '../task-service';
 import { Task } from '../models/task-reponse';
 import { TaskFormComponent } from '../task-form-component/task-form-component';
 import { TaskDetailComponent } from "../task-detail-component/task-detail-component";
+import { ProjectResponse } from '../models/project-response';
+import { Label } from '../models/label-response';
+import { LabelService } from '../label-service';
 
 @Component({
   selector: 'app-project-detail-component',
@@ -18,24 +21,28 @@ import { TaskDetailComponent } from "../task-detail-component/task-detail-compon
 export class ProjectDetailComponent implements OnInit{
   projectMembersList = signal< ProjectMemberResponse[]>([]);
   tasksList = signal< Task[]>([]);
+  labelsList = signal<Label[]>([]);
   backendUrl = "http://localhost:8080"
   viewMode = signal<'list' | 'addMember' | 'addTask'>('list');
-  projectIdFromRoute!: number
   selectedTask = signal<Task | null>(null);
+  @Input({ required: true }) project!: ProjectResponse;
+  @Output() close = new EventEmitter<void>();
+  projectId!: number;
 
   errorMessage = signal<string | null>(null);
   
   constructor(
     private projectMemberService: ProjectMemberService,
-    private route: ActivatedRoute,
     private router: Router,
-    private taskService: TaskService 
+    private taskService: TaskService,
+    private labelService: LabelService,
   ){}
   
 
   ngOnInit(){
-    this.projectIdFromRoute = Number(this.route.snapshot.paramMap.get('id'));
-    this.projectMemberService.getMembers(this.projectIdFromRoute).subscribe({
+    this.projectId = this.project.id;
+
+    this.projectMemberService.getMembers(this.projectId).subscribe({
       next: (data: ProjectMemberResponse[]) => {
           this.projectMembersList.set(data);
       },
@@ -47,7 +54,7 @@ export class ProjectDetailComponent implements OnInit{
         }
       }
     })
-    this.taskService.getTasks(this.projectIdFromRoute).subscribe({
+    this.taskService.getTasks(this.projectId).subscribe({
       next: (data: Task[]) => {
           this.tasksList.set(data);
       },
@@ -58,11 +65,15 @@ export class ProjectDetailComponent implements OnInit{
           this.errorMessage.set('Une erreur est survenue lors du chargement des tâches');
         }
       }
-    })
+    });
+    this.labelService.getLabels(this.projectId).subscribe({
+      next: labels => this.labelsList.set(labels),
+      error: () => this.errorMessage.set('Unable to load project labels.'),
+    });
   }
 
   backButton(){
-    this.router.navigate(['/projects'])
+    this.close.emit();
   }
 
   addMemberButton(){
@@ -108,14 +119,16 @@ export class ProjectDetailComponent implements OnInit{
     this.selectedTask.set(null);
   }
 
+  onLabelCreated(label: Label): void {
+    this.labelsList.update(labels => [...labels, label]);
+  }
+
   isOverdue(task: Task): boolean {
     return !!task.deadline && new Date(task.deadline) < new Date() && task.status !== 'DONE';
   }
 
   deleteProjectMember(userId: number): void {
-    const projectId = Number(this.route.snapshot.paramMap.get('id'));
-
-    this.projectMemberService.removeMember(projectId, userId).subscribe({
+    this.projectMemberService.removeMember(this.projectId, userId).subscribe({
       next: () => {
         this.projectMembersList.update(members =>
           members.filter(member => member.id !== userId)

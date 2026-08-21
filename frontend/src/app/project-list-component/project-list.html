@@ -1,4 +1,12 @@
-<div class="project-page">
+@if (selectedProject()) {
+        <app-project-detail-component
+          [project]="selectedProject()!"
+          (close)="closeTask()"
+        />
+}
+
+@else {
+  <div class="project-page">
 
   <div class="project-page__header">
     <div>
@@ -19,7 +27,7 @@
   <div class="project-grid">
     @for (project of projects(); track project.id) {
       <article class="project-card"
-              (click)="openProject(project.id)">
+              (click)="openProject(project)">
         <div class="project-card__content">
           <h2>{{ project.name }}</h2>
 
@@ -50,3 +58,4 @@
   </div>
 
 </div>
+}

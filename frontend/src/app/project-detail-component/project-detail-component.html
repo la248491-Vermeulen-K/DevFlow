@@ -4,7 +4,7 @@
 
     @case ('addMember') {
       <app-add-member-form-component
-        [projectId]="projectIdFromRoute"
+        [projectId]="projectId"
         (memberAdded)="onMemberAdded($event)"
         (cancelled)="viewMode.set('list')"
       />
@@ -12,7 +12,7 @@
 
     @case ('addTask') {
       <app-task-form-component
-        [projectId]="projectIdFromRoute"
+        [projectId]="projectId"
         (taskAdded)="onTaskAdded($event)"
         (cancelled)="viewMode.set('list')"
       />
@@ -25,9 +25,12 @@
         <app-task-detail-component
           [task]="selectedTask()!"
           [projectMembers]="projectMembersList()"
+          [availableLabels]="labelsList()"
+          [projectId]="projectId"
           (close)="closeTask()"
           (updated)="onTaskUpdated($event)"
           (deleted)="onTaskDeleted($event)"
+          (labelCreated)="onLabelCreated($event)"
         />
 
       } @else {
@@ -35,7 +38,7 @@
         <header class="project-detail__header">
           <div>
             <span class="project-detail__eyebrow">PROJECT</span>
-            <h1>Project members</h1>
+            <h1>{{ project.name }}</h1>
             <p>Manage members and tasks associated with this project.</p>
           </div>
 
@@ -107,7 +110,6 @@
 
                     <div>
                       <h3>{{ member.name }}</h3>
-                      <span>#{{ member.id }}</span>
                     </div>
                   </div>
 
@@ -198,7 +200,6 @@
                   [class.task-card--status-todo]="task.status === 'TODO'"
                   [class.task-card--status-in-progress]="task.status === 'IN_PROGRESS'"
                   [class.task-card--status-done]="task.status === 'DONE'"
-                  (click)="openTask(task)"
                 >
 
                   <div class="task-card__top">
@@ -237,12 +238,16 @@
                     </span>
 
                     @if (task.deadline) {
-                      <span
+                      <time
                         class="task-card__deadline"
                         [class.task-card__deadline--overdue]="isOverdue(task)"
+                        [attr.datetime]="task.deadline"
+                        [attr.title]="task.deadline | date:'EEEE, d MMMM yyyy'"
                       >
-                        {{ task.deadline | date:'dd/MM' }}
-                      </span>
+                        <span class="task-card__deadline-icon" aria-hidden="true">⌾</span>
+                        <span class="task-card__deadline-label">Due</span>
+                        {{ task.deadline | date:'d MMM' }}
+                      </time>
                     }
 
                   </div>
@@ -272,9 +277,15 @@
                       {{ task.assigneeName ?? 'Unassigned' }}
                     </span>
 
-                    <span class="task-card__open">
-                      View →
-                    </span>
+                    <button
+                      type="button"
+                      class="task-card__open"
+                      (click)="openTask(task)"
+                      [attr.aria-label]="'View task: ' + task.title"
+                    >
+                      View details
+                      <span aria-hidden="true">→</span>
+                    </button>
 
                   </div>
 

@@ -109,9 +109,9 @@
         <div class="form-group">
           <label>Status</label>
 
-          <div class="task-detail__toggle-group">
+          <div class="option-toggle-group">
 
-            <div class="task-detail__toggle-option">
+            <div class="option-toggle option-toggle--todo">
               <input
                 type="radio"
                 id="status-todo"
@@ -126,7 +126,7 @@
               </label>
             </div>
 
-            <div class="task-detail__toggle-option">
+            <div class="option-toggle option-toggle--in-progress">
               <input
                 type="radio"
                 id="status-in-progress"
@@ -141,7 +141,7 @@
               </label>
             </div>
 
-            <div class="task-detail__toggle-option">
+            <div class="option-toggle option-toggle--done">
               <input
                 type="radio"
                 id="status-done"
@@ -175,9 +175,9 @@
       <div class="form-group">
         <label>Priority</label>
 
-        <div class="task-detail__toggle-group">
+        <div class="option-toggle-group">
 
-          <div class="task-detail__toggle-option task-detail__toggle-option--low">
+          <div class="option-toggle option-toggle--low">
             <input
               type="radio"
               id="priority-low"
@@ -192,7 +192,7 @@
             </label>
           </div>
 
-          <div class="task-detail__toggle-option task-detail__toggle-option--medium">
+          <div class="option-toggle option-toggle--medium">
             <input
               type="radio"
               id="priority-medium"
@@ -207,7 +207,7 @@
             </label>
           </div>
 
-          <div class="task-detail__toggle-option task-detail__toggle-option--high">
+          <div class="option-toggle option-toggle--high">
             <input
               type="radio"
               id="priority-high"
@@ -330,24 +330,82 @@
 
     </div>
 
-    @if (task.labels && task.labels.length) {
-
-      <div class="task-detail__labels">
-
-        @for (label of task.labels; track label.id) {
-
-          <span
-            class="label-pill"
-            [style.background]="label.color"
-          >
-            {{ label.name }}
-          </span>
-
-        }
-
+    <section class="task-detail__labels-section" aria-labelledby="task-labels-title">
+      <div class="task-detail__labels-heading">
+        <div>
+          <span class="project-detail__eyebrow">ORGANIZATION</span>
+          <h2 id="task-labels-title">Labels</h2>
+        </div>
       </div>
 
-    }
+      @if (task.labels.length) {
+        <div class="task-detail__labels">
+          @for (label of task.labels; track label.id) {
+            <span class="label-pill" [style.background]="label.color">
+              {{ label.name }}
+              <button
+                type="button"
+                class="label-pill__remove"
+                [attr.aria-label]="'Remove label ' + label.name"
+                (click)="removeLabel(label)"
+                [disabled]="isManagingLabels()"
+              >
+                ×
+              </button>
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="task-detail__labels-empty">No labels have been added to this task.</p>
+      }
+
+      @if (availableLabelsToAdd().length) {
+        <div class="task-detail__label-add-row">
+          <select
+            [(ngModel)]="labelToAdd"
+            aria-label="Choose a project label"
+            [disabled]="isManagingLabels()"
+          >
+            <option value="">Add an existing label…</option>
+            @for (label of availableLabelsToAdd(); track label.id) {
+              <option [value]="label.id">{{ label.name }}</option>
+            }
+          </select>
+          <button
+            type="button"
+            class="btn btn--secondary"
+            (click)="addLabel()"
+            [disabled]="!labelToAdd || isManagingLabels()"
+          >
+            Add label
+          </button>
+        </div>
+      }
+
+      <div class="task-detail__label-create-row">
+        <input
+          type="text"
+          [(ngModel)]="newLabelName"
+          placeholder="Create a new label"
+          maxlength="60"
+          [disabled]="isManagingLabels()"
+        >
+        <input
+          type="color"
+          [(ngModel)]="newLabelColor"
+          aria-label="Label color"
+          [disabled]="isManagingLabels()"
+        >
+        <button
+          type="button"
+          class="btn btn--secondary"
+          (click)="createAndAddLabel()"
+          [disabled]="!newLabelName.trim() || isManagingLabels()"
+        >
+          {{ isManagingLabels() ? 'Updating…' : 'Create & add' }}
+        </button>
+      </div>
+    </section>
 
     <div class="task-detail__footer">
 

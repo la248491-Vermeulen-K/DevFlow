@@ -8,6 +8,8 @@ import com.vermeulenkylian.backend.service.LabelService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/projects/{projectId}/labels")
 public class LabelController {
@@ -21,6 +23,11 @@ public class LabelController {
     @PostMapping
     public LabelResponseDto createLabel(@AuthenticationPrincipal User user, @PathVariable Long projectId, @RequestBody CreateLabelRequestDto dto) {
         return labelService.createLabel(user, projectId, dto);
+    }
+
+    @GetMapping
+    public List<LabelResponseDto> getLabels(@AuthenticationPrincipal User user, @PathVariable Long projectId) {
+        return labelService.getLabels(user, projectId);
     }
     @DeleteMapping("/{labelId}")
     public boolean deleteLabel(@AuthenticationPrincipal User user, @PathVariable Long labelId) {

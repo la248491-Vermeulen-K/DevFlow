@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Task } from '../models/task-reponse';
 import { TaskService } from '../task-service';
 import { ProjectMemberResponse } from '../models/project-member-response';
+import { Label } from '../models/label-response';
+import { LabelService } from '../label-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task-detail-component',
@@ -15,10 +18,13 @@ export class TaskDetailComponent implements OnChanges {
 
   @Input({ required: true }) task!: Task;
   @Input({ required: true }) projectMembers!: ProjectMemberResponse[];
+  @Input({ required: true }) availableLabels: Label[] = [];
+  @Input({ required: true }) projectId!: number;
 
   @Output() close = new EventEmitter<void>();
   @Output() updated = new EventEmitter<Task>();
   @Output() deleted = new EventEmitter<number>();
+  @Output() labelCreated = new EventEmitter<Label>();
 
   searchMember = signal('');
 
@@ -28,13 +34,21 @@ export class TaskDetailComponent implements OnChanges {
   successMessage = signal<string | null>(null);
   isSaving = signal(false);
   isDeleting = signal(false);
+  isManagingLabels = signal(false);
 
   title = '';
   description = '';
   status = '';
   priority = '';
   deadline = '';
-  constructor(private taskService: TaskService) {}
+  labelToAdd = '';
+  newLabelName = '';
+  newLabelColor = '#4c82f7';
+
+  constructor(
+    private taskService: TaskService,
+    private labelService: LabelService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['task'] || changes['projectMembers']) {
@@ -116,6 +130,7 @@ export class TaskDetailComponent implements OnChanges {
         this.loadTask();
         this.successMessage.set('Changes saved.');
         this.updated.emit(updatedTask);
+        this.close.emit();
       },
       error: (error: HttpErrorResponse) => {
         this.isSaving.set(false);
@@ -123,6 +138,66 @@ export class TaskDetailComponent implements OnChanges {
           error.error?.message ?? 'An error occurred while updating the task.'
         );
       }
+    });
+  }
+
+  availableLabelsToAdd(): Label[] {
+    const attachedIds = new Set(this.task.labels.map(label => label.id));
+    return this.availableLabels.filter(label => !attachedIds.has(label.id));
+  }
+
+  addLabel(): void {
+    const labelId = Number(this.labelToAdd);
+    if (!labelId) {
+      return;
+    }
+
+    this.updateTaskLabels(this.labelService.addLabelToTask(this.task.id, labelId));
+  }
+
+  removeLabel(label: Label): void {
+    this.updateTaskLabels(this.labelService.removeLabelFromTask(this.task.id, label.id));
+  }
+
+  createAndAddLabel(): void {
+    const name = this.newLabelName.trim();
+    if (!name) {
+      this.errorMessage.set('A label name is required.');
+      return;
+    }
+
+    this.errorMessage.set(null);
+    this.isManagingLabels.set(true);
+    this.labelService.createLabel(this.projectId, name, this.newLabelColor).subscribe({
+      next: label => {
+        this.labelCreated.emit(label);
+        this.newLabelName = '';
+        this.updateTaskLabels(this.labelService.addLabelToTask(this.task.id, label.id), false);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isManagingLabels.set(false);
+        this.errorMessage.set(error.error?.message ?? 'Unable to create the label.');
+      },
+    });
+  }
+
+  private updateTaskLabels(request: ReturnType<LabelService['addLabelToTask']>, setLoading = true): void {
+    this.errorMessage.set(null);
+    if (setLoading) {
+      this.isManagingLabels.set(true);
+    }
+
+    request.subscribe({
+      next: updatedTask => {
+        this.isManagingLabels.set(false);
+        this.labelToAdd = '';
+        this.task = updatedTask;
+        this.updated.emit(updatedTask);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isManagingLabels.set(false);
+        this.errorMessage.set(error.error?.message ?? 'Unable to update task labels.');
+      },
     });
   }
 

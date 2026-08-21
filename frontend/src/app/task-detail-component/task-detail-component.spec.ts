@@ -27,6 +27,8 @@ describe('TaskDetailComponent', () => {
       labels: [],
     } satisfies Task);
     fixture.componentRef.setInput('projectMembers', []);
+    fixture.componentRef.setInput('availableLabels', []);
+    fixture.componentRef.setInput('projectId', 1);
     fixture.detectChanges();
   });
 

@@ -47,6 +47,19 @@ public class LabelService {
         return new LabelResponseDto(label.getId(),label.getName(),label.getColor());
     }
 
+    public List<LabelResponseDto> getLabels(User user, Long projectId) {
+        if (!permissionService.isMember(user.getId(), projectId)) {
+            throw new ForbiddenException("You are not a member of this project");
+        }
+        if (!projectRepository.existsById(projectId)) {
+            throw new NotFoundException("Project not found");
+        }
+
+        return labelRepository.findByProjectId(projectId).stream()
+                .map(label -> new LabelResponseDto(label.getId(), label.getName(), label.getColor()))
+                .toList();
+    }
+
     public TaskResponseDto addLabelToTask(User user, Long taskId, Long labelId){
         Task task = getTaskAndCheckPermission(user, taskId);
         Label label = getLabelForTask(labelId, task);

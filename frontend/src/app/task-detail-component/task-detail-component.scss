@@ -115,89 +115,16 @@
   align-items: flex-end;
 }
 
-// ------------------------------------------------------------
-// Composant générique pour les sélections d'options (Status & Priority)
-// ------------------------------------------------------------
-.task-detail__toggle-group {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.35rem;
+.task-detail__labels-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-soft);
 }
 
-.task-detail__toggle-option {
-  position: relative;
-
-  input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  input:disabled + label {
-    cursor: not-allowed;
-    opacity: 0.55;
-  }
-
-  label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 40px; // Même hauteur que le champ <input type="date">
-    padding: 0 0.35rem;
-
-    background: rgba(13, 17, 23, 0.85);
-    border: 1px solid var(--color-border-soft);
-    border-radius: var(--radius-sm);
-
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.72rem; // Légèrement réduit pour éviter le retour à la ligne
-    font-weight: 500;
-    white-space: nowrap;
-
-    cursor: pointer;
-    transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
-
-    &::before {
-      content: '>';
-      margin-right: 3px;
-      opacity: 0.5;
-    }
-  }
-
-  &:hover label {
-    border-color: rgba(139, 148, 158, 0.35);
-    color: var(--color-text);
-  }
-
-  // Actif (Status & Priority)
-  input:checked + label {
-    background: var(--color-accent-dim);
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-
-    &::before {
-      opacity: 1;
-    }
-  }
-
-  &--low input:checked + label {
-    background: var(--color-success-dim);
-    border-color: var(--color-success);
-    color: var(--color-success);
-  }
-
-  &--medium input:checked + label {
-    background: rgba(232, 163, 61, 0.1);
-    border-color: var(--color-warning);
-    color: var(--color-warning);
-  }
-
-  &--high input:checked + label {
-    background: var(--color-danger-dim);
-    border-color: var(--color-danger);
-    color: var(--color-danger);
+.task-detail__labels-heading {
+  h2 {
+    margin: 0;
+    font-size: 0.9rem;
   }
 }
 
@@ -205,19 +132,65 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: var(--space-md);
+  margin: var(--space-sm) 0;
 }
 
-.label-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
-  color: #0d1117;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 600;
+.task-detail__labels-empty {
+  margin: var(--space-sm) 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.label-pill__remove {
+  width: 16px;
+  height: 16px;
+  margin-left: 0.25rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: rgba(13, 17, 23, 0.22);
+  }
+}
+
+.task-detail__label-add-row,
+.task-detail__label-create-row {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+
+  select,
+  input[type='text'] {
+    height: 40px;
+    padding: 0 var(--space-sm);
+    background: rgba(13, 17, 23, 0.85);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  input[type='color'] {
+    width: 42px;
+    height: 40px;
+    padding: 3px;
+    background: transparent;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  .btn {
+    flex-shrink: 0;
+  }
 }
 
 .task-detail__footer {
@@ -254,10 +227,6 @@
     padding: var(--space-md);
   }
 
-  .task-detail__toggle-group {
-    grid-template-columns: 1fr;
-  }
-
   .task-detail__footer {
     flex-direction: column-reverse;
     align-items: stretch;
@@ -266,67 +235,16 @@
       width: 100%;
     }
   }
-}
-// ============================================================
-// Style dédié au champ Description (textarea)
-// ============================================================
 
-.form-group:has(#description) {
-  position: relative;
+  .task-detail__label-add-row,
+  .task-detail__label-create-row {
+    flex-wrap: wrap;
 
-  textarea#description {
-    min-height: 120px;
-    padding: 0.75rem 0.85rem;
-
-    background: rgba(13, 17, 23, 0.85);
-    border: 1px solid var(--color-border-soft);
-    border-left: 3px solid rgba(139, 148, 158, 0.4); // Accentuation latérale
-    border-radius: var(--radius-sm);
-
-    color: var(--color-text);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.6;
-
-    resize: vertical;
-    transition:
-      border-color 0.18s ease,
-      background-color 0.18s ease,
-      box-shadow 0.18s ease;
-
-    &::placeholder {
-      color: #484f58;
-      font-style: italic;
-    }
-
-    &:hover {
-      border-color: rgba(139, 148, 158, 0.35);
-      border-left-color: var(--color-text-muted);
-    }
-
-    &:focus {
-      outline: none;
-      background: rgba(13, 17, 23, 1);
-      border-color: var(--color-accent);
-      border-left-color: var(--color-accent);
-      box-shadow: 0 0 0 3px var(--color-accent-dim);
-    }
-
-    // Personnalisation du coin de redimensionnement (WebKit)
-    &::-webkit-resizer {
-      background-image: linear-gradient(
-        135deg,
-        transparent 50%,
-        var(--color-border-soft) 50%,
-        var(--color-border-soft) 60%,
-        transparent 60%,
-        transparent 75%,
-        var(--color-border-soft) 75%
-      );
+    .btn {
+      flex: 1;
     }
   }
 }
-
 .task-detail__success {
   margin-bottom: var(--space-md);
   padding: 0.65rem 0.75rem;
@@ -382,6 +300,7 @@
     color: var(--color-text-muted);
     font-size: 0.72rem;
   }
+
 }
 
 .task-detail__member-avatar {
