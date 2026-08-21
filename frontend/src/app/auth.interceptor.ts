@@ -4,20 +4,22 @@ import {
   HttpInterceptorFn
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, finalize, Observable, shareReplay, switchMap, tap, throwError } from 'rxjs';
 
 import { AuthService } from './auth-service';
+import { RefreshResponse } from './models/refresh-response';
+
+let refreshRequest$: Observable<RefreshResponse> | null = null;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const isLoginRequest = req.url.includes('/api/auth/login');
-  const isRefreshRequest = req.url.includes('/api/auth/refresh');
+  const isAuthRequest = req.url.includes('/api/auth/');
 
   const token = authService.getToken();
 
-  const authReq = token
+  const authReq = token && !isAuthRequest
     ? req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
@@ -30,30 +32,25 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (
         error.status !== 401 ||
-        isLoginRequest ||
-        isRefreshRequest
+        isAuthRequest
       ) {
         return throwError(() => error);
       }
 
-      const refreshToken = authService.getRefreshToken();
-
-      if (!refreshToken) {
-        authService.logout();
-        router.navigate(['/login']);
-
-        return throwError(() => error);
+      if (!refreshRequest$) {
+        refreshRequest$ = authService.refreshToken().pipe(
+          tap(response => authService.setToken(response.token)),
+          finalize(() => refreshRequest$ = null),
+          shareReplay({ bufferSize: 1, refCount: false })
+        );
       }
 
-      return authService.refreshToken(refreshToken).pipe(
-
-        switchMap((response: string) => {
-
-          authService.setToken(response);
+      return refreshRequest$.pipe(
+        switchMap((response: RefreshResponse) => {
 
           const retryReq = req.clone({
             setHeaders: {
-              Authorization: `Bearer ${response}`
+              Authorization: `Bearer ${response.token}`
             }
           });
 

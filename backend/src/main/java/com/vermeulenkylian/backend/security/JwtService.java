@@ -15,18 +15,22 @@ public class JwtService {
 
     private final SecretKey key;
     private final long expiration;
+    private final String issuer;
 
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration}") long expiration
+            @Value("${app.jwt.expiration}") long expiration,
+            @Value("${app.jwt.issuer}") String issuer
     ) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiration = expiration;
+        this.issuer = issuer;
     }
 
     public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
+                .issuer(issuer)
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
@@ -35,6 +39,7 @@ public class JwtService {
     public String extractEmail(String token) {
         return Jwts.parser()
                 .verifyWith(key)
+                .requireIssuer(issuer)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()

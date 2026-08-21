@@ -2,7 +2,6 @@ package com.vermeulenkylian.backend.service;
 
 import com.vermeulenkylian.backend.DTO.*;
 import com.vermeulenkylian.backend.exception.BadRequestException;
-import com.vermeulenkylian.backend.exception.NotFoundException;
 import com.vermeulenkylian.backend.exception.UnauthorizedException;
 import com.vermeulenkylian.backend.model.RefreshToken;
 import com.vermeulenkylian.backend.model.User;
@@ -13,7 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.UUID;
 
 @Service
@@ -45,28 +50,63 @@ public class AuthService {
         return new UserResponseDto(user.getId(), user.getName(), user.getEmail(), user.getCreatedAt());
     }
 
-    public LoginResponseDto login(LoginRequestDto dto) {
-        User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new BadRequestException("Email ou mot de passe incorrect"));
+    public AuthSessionDto login(LoginRequestDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Email ou mot de passe incorrect");
+            throw new UnauthorizedException("Invalid email or password");
         }
+        String rawRefreshToken = createRefreshToken(user);
+        return new AuthSessionDto(
+                new LoginResponseDto(jwtService.generateToken(user), user.getId(), user.getName(), user.getEmail()),
+                rawRefreshToken
+        );
+    }
+
+    @Transactional
+    public AuthSessionDto refreshToken(String rawRefreshToken) {
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            throw new UnauthorizedException("Refresh token is missing");
+        }
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(hashToken(rawRefreshToken))
+                .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+        if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new UnauthorizedException("Refresh token has expired");
+        }
+
+        User user = refreshToken.getUser();
+        refreshTokenRepository.delete(refreshToken);
+        String nextRawRefreshToken = createRefreshToken(user);
+        return new AuthSessionDto(
+                new LoginResponseDto(jwtService.generateToken(user), user.getId(), user.getName(), user.getEmail()),
+                nextRawRefreshToken
+        );
+    }
+
+    @Transactional
+    public void logout(String rawRefreshToken) {
+        if (rawRefreshToken != null && !rawRefreshToken.isBlank()) {
+            refreshTokenRepository.findByToken(hashToken(rawRefreshToken)).ifPresent(refreshTokenRepository::delete);
+        }
+    }
+
+    private String createRefreshToken(User user) {
+        String rawToken = UUID.randomUUID().toString();
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken.setToken(hashToken(rawToken));
         refreshToken.setUser(user);
         refreshToken.setExpiryDate(LocalDateTime.now().plusDays(refreshExpirationDays));
         refreshTokenRepository.save(refreshToken);
-        return new LoginResponseDto(jwtService.generateToken(user), user.getId(), user.getName(), user.getEmail(), refreshToken.getToken());
+        return rawToken;
     }
 
-    public String refreshToken(RefreshRequestDto dto){
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(dto.getRefreshToken())
-                .orElseThrow(() ->
-                        new NotFoundException("Refresh token introuvable")
-                );
-        if(refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
-            throw new UnauthorizedException("Refresh token has expired");
+    private String hashToken(String token) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(token.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 is unavailable", exception);
         }
-        User user = refreshToken.getUser();
-        return jwtService.generateToken(user);
     }
 }

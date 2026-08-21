@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { LoginResponse } from './models/login-response';
 import { Observable, tap } from 'rxjs';
 import { RegisterResponse } from './models/register-response';
+import { RefreshResponse } from './models/refresh-response';
 
 @Injectable({
   providedIn: 'root',
@@ -14,10 +15,9 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.backendUrl}/login`, { email, password }).pipe(
+    return this.http.post<LoginResponse>(`${this.backendUrl}/login`, { email, password }, { withCredentials: true }).pipe(
       tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        this.setToken(response.token);
       })
     );
   }
@@ -26,28 +26,44 @@ export class AuthService {
   return this.http.post<RegisterResponse>(`${this.backendUrl}/register`, { name, email, password });
 }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+  logout(): void {
+    sessionStorage.removeItem('token');
+    this.http.post(`${this.backendUrl}/logout`, {}, { withCredentials: true }).subscribe({
+      error: () => undefined,
+    });
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   }
 
   isAuthenticated(): boolean {
-    return this.getToken() !== null;
+    const token = this.getToken();
+    if (!token || this.isTokenExpired(token)) {
+      sessionStorage.removeItem('token');
+      return false;
+    }
+    return true;
   }
 
-  refreshToken(refreshToken: string): Observable<string> {
-    return this.http.post(`${this.backendUrl}/refresh`, { refreshToken }, { responseType: 'text' });
+  refreshToken(): Observable<RefreshResponse> {
+    return this.http.post<RefreshResponse>(`${this.backendUrl}/refresh`, {}, { withCredentials: true });
   }
 
   setToken(token: string): void {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
   }
 
-  getRefreshToken(){
-    return localStorage.getItem('refreshToken')
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = token.split('.')[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      const paddedPayload = payload.padEnd(payload.length + ((4 - payload.length % 4) % 4), '=');
+      const { exp } = JSON.parse(atob(paddedPayload));
+      return typeof exp !== 'number' || exp <= Math.floor(Date.now() / 1000);
+    } catch {
+      return true;
+    }
   }
 } 
